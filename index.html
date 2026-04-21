@@ -1,0 +1,4626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台股週K MA20 過濾清單</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #080e18;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+      padding: 32px 20px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #3b82f6;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: #131f2e;
+      border: 1px solid #2d3f55;
+      border-radius: 10px;
+      padding: 14px 22px;
+      min-width: 140px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .callout {
+      background: #0f2040;
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 8px;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+    }
+
+    /* 搜尋框 */
+    .search-bar {
+      margin-bottom: 16px;
+    }
+    .search-bar input {
+      background: #131f2e;
+      border: 1px solid #2d3f55;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+      width: 260px;
+      outline: none;
+    }
+    .search-bar input:focus {
+      border-color: #3b82f6;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #2d3f55;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead tr {
+      background: #0f2040;
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      color: #93c5fd;
+      font-weight: 600;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:hover { color: #3b82f6; }
+
+    tbody tr {
+      border-top: 1px solid #1a2d42;
+      transition: background 0.15s;
+    }
+    tbody tr:hover {
+      background: #131f2e;
+    }
+
+    td {
+      padding: 10px 16px;
+      white-space: nowrap;
+    }
+
+    .code { color: #fb923c; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .num  { text-align: right; }
+    .pos  { color: #34d399; }
+    .up   { color: #3b82f6; }
+
+    footer {
+      margin-top: 36px;
+      padding-top: 16px;
+      border-top: 1px solid #2d3f55;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<h1>台股週K MA20 過濾清單</h1>
+<p class="subtitle">掃描時間：2026-04-21 16:37　｜　資料來源：Yahoo Finance 週K線</p>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">符合條件</div>
+    <div class="stat-value">551</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">過濾條件</div>
+    <div class="stat-value" style="font-size:0.9rem; color:#fb923c; padding-top:4px;">
+      收盤 &gt; MA20<br>MA20 向上
+    </div>
+  </div>
+</div>
+
+<div class="callout">
+  📌 <strong>週K MA20（20週均線）</strong>：以近 20 週收盤價計算的移動平均線（Moving Average）。<br>
+  條件一：本週收盤價 &gt; MA20（價格站上均線）<br>
+  條件二：本週 MA20 &gt; 上週 MA20（均線方向向上）
+</div>
+
+<div class="search-bar">
+  <input type="text" id="search" placeholder="搜尋代碼或名稱…" oninput="filterTable()">
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">股票代碼 ↕</th>
+        <th onclick="sortTable(1)">名稱 ↕</th>
+        <th onclick="sortTable(2)">收盤價 ↕</th>
+        <th onclick="sortTable(3)">週MA20 ↕</th>
+        <th onclick="sortTable(4)">收盤/MA20 乖離 ↕</th>
+        <th onclick="sortTable(5)">MA20 週變化 ↕</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="code">9931</td>
+          <td>欣高</td>
+          <td class="num">36.0</td>
+          <td class="num">36.0</td>
+          <td class="num pos">+0.01%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">1521</td>
+          <td>大億</td>
+          <td class="num">25.5</td>
+          <td class="num">25.49</td>
+          <td class="num pos">+0.03%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">8411</td>
+          <td>福貞-KY</td>
+          <td class="num">12.25</td>
+          <td class="num">12.25</td>
+          <td class="num pos">+0.04%</td>
+          <td class="num up">▲ 0.08%</td>
+        </tr>
+        <tr>
+          <td class="code">2867</td>
+          <td>三商壽</td>
+          <td class="num">7.9</td>
+          <td class="num">7.89</td>
+          <td class="num pos">+0.15%</td>
+          <td class="num up">▲ 0.4%</td>
+        </tr>
+        <tr>
+          <td class="code">2616</td>
+          <td>山隆</td>
+          <td class="num">15.05</td>
+          <td class="num">15.02</td>
+          <td class="num pos">+0.17%</td>
+          <td class="num up">▲ 0.35%</td>
+        </tr>
+        <tr>
+          <td class="code">4736</td>
+          <td>泰博</td>
+          <td class="num">126.0</td>
+          <td class="num">125.7</td>
+          <td class="num pos">+0.24%</td>
+          <td class="num up">▲ 0.04%</td>
+        </tr>
+        <tr>
+          <td class="code">1503</td>
+          <td>士電</td>
+          <td class="num">198.0</td>
+          <td class="num">197.43</td>
+          <td class="num pos">+0.29%</td>
+          <td class="num up">▲ 0.82%</td>
+        </tr>
+        <tr>
+          <td class="code">1312</td>
+          <td>國喬</td>
+          <td class="num">13.0</td>
+          <td class="num">12.96</td>
+          <td class="num pos">+0.31%</td>
+          <td class="num up">▲ 0.62%</td>
+        </tr>
+        <tr>
+          <td class="code">2002</td>
+          <td>中鋼</td>
+          <td class="num">19.75</td>
+          <td class="num">19.69</td>
+          <td class="num pos">+0.32%</td>
+          <td class="num up">▲ 0.27%</td>
+        </tr>
+        <tr>
+          <td class="code">5519</td>
+          <td>隆大</td>
+          <td class="num">32.7</td>
+          <td class="num">32.58</td>
+          <td class="num pos">+0.36%</td>
+          <td class="num up">▲ 0.1%</td>
+        </tr>
+        <tr>
+          <td class="code">5533</td>
+          <td>皇鼎</td>
+          <td class="num">14.45</td>
+          <td class="num">14.39</td>
+          <td class="num pos">+0.40%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">1529</td>
+          <td>樂事綠能</td>
+          <td class="num">23.5</td>
+          <td class="num">23.36</td>
+          <td class="num pos">+0.61%</td>
+          <td class="num up">▲ 0.97%</td>
+        </tr>
+        <tr>
+          <td class="code">2453</td>
+          <td>凌群</td>
+          <td class="num">54.4</td>
+          <td class="num">54.07</td>
+          <td class="num pos">+0.61%</td>
+          <td class="num up">▲ 0.11%</td>
+        </tr>
+        <tr>
+          <td class="code">2911</td>
+          <td>麗嬰房</td>
+          <td class="num">5.08</td>
+          <td class="num">5.05</td>
+          <td class="num pos">+0.63%</td>
+          <td class="num up">▲ 0.68%</td>
+        </tr>
+        <tr>
+          <td class="code">6115</td>
+          <td>鎰勝</td>
+          <td class="num">47.5</td>
+          <td class="num">47.19</td>
+          <td class="num pos">+0.66%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">9105</td>
+          <td>泰金寶-DR</td>
+          <td class="num">5.79</td>
+          <td class="num">5.75</td>
+          <td class="num pos">+0.70%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">2477</td>
+          <td>美隆電</td>
+          <td class="num">24.5</td>
+          <td class="num">24.32</td>
+          <td class="num pos">+0.73%</td>
+          <td class="num up">▲ 0.18%</td>
+        </tr>
+        <tr>
+          <td class="code">2704</td>
+          <td>國賓</td>
+          <td class="num">43.35</td>
+          <td class="num">43.02</td>
+          <td class="num pos">+0.77%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">1468</td>
+          <td>昶和</td>
+          <td class="num">12.45</td>
+          <td class="num">12.35</td>
+          <td class="num pos">+0.81%</td>
+          <td class="num up">▲ 0.24%</td>
+        </tr>
+        <tr>
+          <td class="code">8481</td>
+          <td>政伸</td>
+          <td class="num">42.0</td>
+          <td class="num">41.66</td>
+          <td class="num pos">+0.81%</td>
+          <td class="num up">▲ 0.09%</td>
+        </tr>
+        <tr>
+          <td class="code">1514</td>
+          <td>亞力</td>
+          <td class="num">114.0</td>
+          <td class="num">113.05</td>
+          <td class="num pos">+0.84%</td>
+          <td class="num up">▲ 0.79%</td>
+        </tr>
+        <tr>
+          <td class="code">6955</td>
+          <td>邦睿生技-創</td>
+          <td class="num">164.0</td>
+          <td class="num">162.58</td>
+          <td class="num pos">+0.88%</td>
+          <td class="num up">▲ 0.23%</td>
+        </tr>
+        <tr>
+          <td class="code">6698</td>
+          <td>旭暉應材</td>
+          <td class="num">32.4</td>
+          <td class="num">32.11</td>
+          <td class="num pos">+0.90%</td>
+          <td class="num up">▲ 0.39%</td>
+        </tr>
+        <tr>
+          <td class="code">2908</td>
+          <td>特力</td>
+          <td class="num">20.5</td>
+          <td class="num">20.31</td>
+          <td class="num pos">+0.94%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">1726</td>
+          <td>永記</td>
+          <td class="num">76.8</td>
+          <td class="num">76.08</td>
+          <td class="num pos">+0.95%</td>
+          <td class="num up">▲ 0.01%</td>
+        </tr>
+        <tr>
+          <td class="code">2882</td>
+          <td>國泰金</td>
+          <td class="num">75.5</td>
+          <td class="num">74.76</td>
+          <td class="num pos">+0.99%</td>
+          <td class="num up">▲ 0.46%</td>
+        </tr>
+        <tr>
+          <td class="code">1612</td>
+          <td>宏泰</td>
+          <td class="num">35.65</td>
+          <td class="num">35.29</td>
+          <td class="num pos">+1.03%</td>
+          <td class="num up">▲ 0.08%</td>
+        </tr>
+        <tr>
+          <td class="code">6133</td>
+          <td>金橋</td>
+          <td class="num">23.1</td>
+          <td class="num">22.86</td>
+          <td class="num pos">+1.04%</td>
+          <td class="num up">▲ 0.94%</td>
+        </tr>
+        <tr>
+          <td class="code">1101</td>
+          <td>台泥</td>
+          <td class="num">24.75</td>
+          <td class="num">24.49</td>
+          <td class="num pos">+1.06%</td>
+          <td class="num up">▲ 0.42%</td>
+        </tr>
+        <tr>
+          <td class="code">4942</td>
+          <td>嘉彰</td>
+          <td class="num">38.75</td>
+          <td class="num">38.35</td>
+          <td class="num pos">+1.06%</td>
+          <td class="num up">▲ 0.1%</td>
+        </tr>
+        <tr>
+          <td class="code">8482</td>
+          <td>商億-KY</td>
+          <td class="num">50.1</td>
+          <td class="num">49.55</td>
+          <td class="num pos">+1.12%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">8011</td>
+          <td>台通</td>
+          <td class="num">21.5</td>
+          <td class="num">21.25</td>
+          <td class="num pos">+1.16%</td>
+          <td class="num up">▲ 0.01%</td>
+        </tr>
+        <tr>
+          <td class="code">1737</td>
+          <td>臺鹽</td>
+          <td class="num">32.05</td>
+          <td class="num">31.68</td>
+          <td class="num pos">+1.18%</td>
+          <td class="num up">▲ 0.06%</td>
+        </tr>
+        <tr>
+          <td class="code">6005</td>
+          <td>群益證</td>
+          <td class="num">28.1</td>
+          <td class="num">27.77</td>
+          <td class="num pos">+1.20%</td>
+          <td class="num up">▲ 0.58%</td>
+        </tr>
+        <tr>
+          <td class="code">1460</td>
+          <td>宏遠</td>
+          <td class="num">6.78</td>
+          <td class="num">6.7</td>
+          <td class="num pos">+1.22%</td>
+          <td class="num up">▲ 0.47%</td>
+        </tr>
+        <tr>
+          <td class="code">2449</td>
+          <td>京元電子</td>
+          <td class="num">281.0</td>
+          <td class="num">277.6</td>
+          <td class="num pos">+1.22%</td>
+          <td class="num up">▲ 1.08%</td>
+        </tr>
+        <tr>
+          <td class="code">1417</td>
+          <td>嘉裕</td>
+          <td class="num">9.02</td>
+          <td class="num">8.91</td>
+          <td class="num pos">+1.29%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">2820</td>
+          <td>華票</td>
+          <td class="num">17.05</td>
+          <td class="num">16.82</td>
+          <td class="num pos">+1.38%</td>
+          <td class="num up">▲ 0.15%</td>
+        </tr>
+        <tr>
+          <td class="code">6183</td>
+          <td>關貿</td>
+          <td class="num">96.0</td>
+          <td class="num">94.67</td>
+          <td class="num pos">+1.40%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">3311</td>
+          <td>閎暉</td>
+          <td class="num">32.55</td>
+          <td class="num">32.09</td>
+          <td class="num pos">+1.43%</td>
+          <td class="num up">▲ 0.08%</td>
+        </tr>
+        <tr>
+          <td class="code">2015</td>
+          <td>豐興</td>
+          <td class="num">62.8</td>
+          <td class="num">61.89</td>
+          <td class="num pos">+1.47%</td>
+          <td class="num up">▲ 0.23%</td>
+        </tr>
+        <tr>
+          <td class="code">9912</td>
+          <td>偉聯</td>
+          <td class="num">12.45</td>
+          <td class="num">12.27</td>
+          <td class="num pos">+1.47%</td>
+          <td class="num up">▲ 0.22%</td>
+        </tr>
+        <tr>
+          <td class="code">2390</td>
+          <td>云辰</td>
+          <td class="num">10.35</td>
+          <td class="num">10.2</td>
+          <td class="num pos">+1.48%</td>
+          <td class="num up">▲ 0.4%</td>
+        </tr>
+        <tr>
+          <td class="code">5269</td>
+          <td>祥碩</td>
+          <td class="num">1255.0</td>
+          <td class="num">1235.25</td>
+          <td class="num pos">+1.60%</td>
+          <td class="num up">▲ 0.12%</td>
+        </tr>
+        <tr>
+          <td class="code">1451</td>
+          <td>年興</td>
+          <td class="num">17.1</td>
+          <td class="num">16.83</td>
+          <td class="num pos">+1.62%</td>
+          <td class="num up">▲ 0.2%</td>
+        </tr>
+        <tr>
+          <td class="code">1232</td>
+          <td>大統益</td>
+          <td class="num">150.5</td>
+          <td class="num">147.97</td>
+          <td class="num pos">+1.71%</td>
+          <td class="num up">▲ 0.15%</td>
+        </tr>
+        <tr>
+          <td class="code">3432</td>
+          <td>台端</td>
+          <td class="num">16.6</td>
+          <td class="num">16.31</td>
+          <td class="num pos">+1.76%</td>
+          <td class="num up">▲ 0.77%</td>
+        </tr>
+        <tr>
+          <td class="code">6790</td>
+          <td>永豐實</td>
+          <td class="num">39.85</td>
+          <td class="num">39.16</td>
+          <td class="num pos">+1.76%</td>
+          <td class="num up">▲ 0.12%</td>
+        </tr>
+        <tr>
+          <td class="code">8464</td>
+          <td>億豐</td>
+          <td class="num">378.5</td>
+          <td class="num">371.88</td>
+          <td class="num pos">+1.78%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">9927</td>
+          <td>泰銘</td>
+          <td class="num">70.2</td>
+          <td class="num">68.95</td>
+          <td class="num pos">+1.81%</td>
+          <td class="num up">▲ 0.01%</td>
+        </tr>
+        <tr>
+          <td class="code">4994</td>
+          <td>傳奇</td>
+          <td class="num">101.0</td>
+          <td class="num">99.18</td>
+          <td class="num pos">+1.84%</td>
+          <td class="num up">▲ 0.43%</td>
+        </tr>
+        <tr>
+          <td class="code">5706</td>
+          <td>鳳凰</td>
+          <td class="num">51.9</td>
+          <td class="num">50.95</td>
+          <td class="num pos">+1.86%</td>
+          <td class="num up">▲ 0.06%</td>
+        </tr>
+        <tr>
+          <td class="code">1315</td>
+          <td>達新</td>
+          <td class="num">65.5</td>
+          <td class="num">64.26</td>
+          <td class="num pos">+1.94%</td>
+          <td class="num up">▲ 0.04%</td>
+        </tr>
+        <tr>
+          <td class="code">3545</td>
+          <td>敦泰</td>
+          <td class="num">51.1</td>
+          <td class="num">50.1</td>
+          <td class="num pos">+2.00%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">9918</td>
+          <td>欣天然</td>
+          <td class="num">43.55</td>
+          <td class="num">42.7</td>
+          <td class="num pos">+2.00%</td>
+          <td class="num up">▲ 0.45%</td>
+        </tr>
+        <tr>
+          <td class="code">6505</td>
+          <td>台塑化</td>
+          <td class="num">53.0</td>
+          <td class="num">51.95</td>
+          <td class="num pos">+2.01%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">2031</td>
+          <td>新光鋼</td>
+          <td class="num">40.0</td>
+          <td class="num">39.21</td>
+          <td class="num pos">+2.02%</td>
+          <td class="num up">▲ 0.15%</td>
+        </tr>
+        <tr>
+          <td class="code">1341</td>
+          <td>富林-KY</td>
+          <td class="num">60.5</td>
+          <td class="num">59.27</td>
+          <td class="num pos">+2.08%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">2727</td>
+          <td>王品</td>
+          <td class="num">225.5</td>
+          <td class="num">220.82</td>
+          <td class="num pos">+2.12%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">3025</td>
+          <td>星通</td>
+          <td class="num">64.4</td>
+          <td class="num">63.05</td>
+          <td class="num pos">+2.15%</td>
+          <td class="num up">▲ 0.82%</td>
+        </tr>
+        <tr>
+          <td class="code">1810</td>
+          <td>和成</td>
+          <td class="num">18.65</td>
+          <td class="num">18.25</td>
+          <td class="num pos">+2.21%</td>
+          <td class="num up">▲ 0.41%</td>
+        </tr>
+        <tr>
+          <td class="code">2034</td>
+          <td>允強</td>
+          <td class="num">21.3</td>
+          <td class="num">20.83</td>
+          <td class="num pos">+2.23%</td>
+          <td class="num up">▲ 0.26%</td>
+        </tr>
+        <tr>
+          <td class="code">9911</td>
+          <td>櫻花</td>
+          <td class="num">83.2</td>
+          <td class="num">81.35</td>
+          <td class="num pos">+2.27%</td>
+          <td class="num up">▲ 0.23%</td>
+        </tr>
+        <tr>
+          <td class="code">2816</td>
+          <td>旺旺保</td>
+          <td class="num">30.45</td>
+          <td class="num">29.77</td>
+          <td class="num pos">+2.28%</td>
+          <td class="num up">▲ 0.09%</td>
+        </tr>
+        <tr>
+          <td class="code">3679</td>
+          <td>新至陞</td>
+          <td class="num">119.0</td>
+          <td class="num">116.3</td>
+          <td class="num pos">+2.32%</td>
+          <td class="num up">▲ 0.06%</td>
+        </tr>
+        <tr>
+          <td class="code">4532</td>
+          <td>瑞智</td>
+          <td class="num">24.55</td>
+          <td class="num">23.99</td>
+          <td class="num pos">+2.35%</td>
+          <td class="num up">▲ 0.41%</td>
+        </tr>
+        <tr>
+          <td class="code">2412</td>
+          <td>中華電</td>
+          <td class="num">137.0</td>
+          <td class="num">133.82</td>
+          <td class="num pos">+2.37%</td>
+          <td class="num up">▲ 0.26%</td>
+        </tr>
+        <tr>
+          <td class="code">0055</td>
+          <td>元大MSCI金融</td>
+          <td class="num">33.35</td>
+          <td class="num">32.57</td>
+          <td class="num pos">+2.38%</td>
+          <td class="num up">▲ 0.5%</td>
+        </tr>
+        <tr>
+          <td class="code">6914</td>
+          <td>阜爾運通</td>
+          <td class="num">150.0</td>
+          <td class="num">146.5</td>
+          <td class="num pos">+2.39%</td>
+          <td class="num up">▲ 0.05%</td>
+        </tr>
+        <tr>
+          <td class="code">4137</td>
+          <td>麗豐-KY</td>
+          <td class="num">108.5</td>
+          <td class="num">105.96</td>
+          <td class="num pos">+2.40%</td>
+          <td class="num up">▲ 0.42%</td>
+        </tr>
+        <tr>
+          <td class="code">1218</td>
+          <td>泰山</td>
+          <td class="num">19.0</td>
+          <td class="num">18.55</td>
+          <td class="num pos">+2.41%</td>
+          <td class="num up">▲ 0.23%</td>
+        </tr>
+        <tr>
+          <td class="code">2636</td>
+          <td>台驊控股</td>
+          <td class="num">68.3</td>
+          <td class="num">66.65</td>
+          <td class="num pos">+2.47%</td>
+          <td class="num up">▲ 0.11%</td>
+        </tr>
+        <tr>
+          <td class="code">1604</td>
+          <td>聲寶</td>
+          <td class="num">23.6</td>
+          <td class="num">23.02</td>
+          <td class="num pos">+2.53%</td>
+          <td class="num up">▲ 0.06%</td>
+        </tr>
+        <tr>
+          <td class="code">2013</td>
+          <td>中鋼構</td>
+          <td class="num">44.0</td>
+          <td class="num">42.9</td>
+          <td class="num pos">+2.56%</td>
+          <td class="num up">▲ 0.19%</td>
+        </tr>
+        <tr>
+          <td class="code">2107</td>
+          <td>厚生</td>
+          <td class="num">25.8</td>
+          <td class="num">25.13</td>
+          <td class="num pos">+2.65%</td>
+          <td class="num up">▲ 0.34%</td>
+        </tr>
+        <tr>
+          <td class="code">2891</td>
+          <td>中信金</td>
+          <td class="num">53.0</td>
+          <td class="num">51.62</td>
+          <td class="num pos">+2.66%</td>
+          <td class="num up">▲ 0.83%</td>
+        </tr>
+        <tr>
+          <td class="code">1310</td>
+          <td>台苯</td>
+          <td class="num">9.91</td>
+          <td class="num">9.65</td>
+          <td class="num pos">+2.67%</td>
+          <td class="num up">▲ 0.42%</td>
+        </tr>
+        <tr>
+          <td class="code">1583</td>
+          <td>程泰</td>
+          <td class="num">47.7</td>
+          <td class="num">46.46</td>
+          <td class="num pos">+2.67%</td>
+          <td class="num up">▲ 0.12%</td>
+        </tr>
+        <tr>
+          <td class="code">0061</td>
+          <td>元大寶滬深</td>
+          <td class="num">24.15</td>
+          <td class="num">23.52</td>
+          <td class="num pos">+2.70%</td>
+          <td class="num up">▲ 0.37%</td>
+        </tr>
+        <tr>
+          <td class="code">1219</td>
+          <td>福壽</td>
+          <td class="num">14.05</td>
+          <td class="num">13.67</td>
+          <td class="num pos">+2.76%</td>
+          <td class="num up">▲ 0.09%</td>
+        </tr>
+        <tr>
+          <td class="code">1713</td>
+          <td>國化</td>
+          <td class="num">48.25</td>
+          <td class="num">46.95</td>
+          <td class="num pos">+2.76%</td>
+          <td class="num up">▲ 0.57%</td>
+        </tr>
+        <tr>
+          <td class="code">1710</td>
+          <td>東聯</td>
+          <td class="num">13.55</td>
+          <td class="num">13.18</td>
+          <td class="num pos">+2.79%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">2032</td>
+          <td>新鋼</td>
+          <td class="num">16.1</td>
+          <td class="num">15.66</td>
+          <td class="num pos">+2.81%</td>
+          <td class="num up">▲ 0.71%</td>
+        </tr>
+        <tr>
+          <td class="code">2482</td>
+          <td>連宇</td>
+          <td class="num">17.9</td>
+          <td class="num">17.41</td>
+          <td class="num pos">+2.83%</td>
+          <td class="num up">▲ 0.24%</td>
+        </tr>
+        <tr>
+          <td class="code">5215</td>
+          <td>科嘉-KY</td>
+          <td class="num">38.25</td>
+          <td class="num">37.19</td>
+          <td class="num pos">+2.84%</td>
+          <td class="num up">▲ 0.32%</td>
+        </tr>
+        <tr>
+          <td class="code">3149</td>
+          <td>正達</td>
+          <td class="num">46.3</td>
+          <td class="num">45.01</td>
+          <td class="num pos">+2.87%</td>
+          <td class="num up">▲ 1.37%</td>
+        </tr>
+        <tr>
+          <td class="code">1444</td>
+          <td>力麗</td>
+          <td class="num">6.43</td>
+          <td class="num">6.25</td>
+          <td class="num pos">+2.88%</td>
+          <td class="num up">▲ 0.22%</td>
+        </tr>
+        <tr>
+          <td class="code">2069</td>
+          <td>運錩</td>
+          <td class="num">19.2</td>
+          <td class="num">18.66</td>
+          <td class="num pos">+2.89%</td>
+          <td class="num up">▲ 0.65%</td>
+        </tr>
+        <tr>
+          <td class="code">1617</td>
+          <td>榮星</td>
+          <td class="num">15.85</td>
+          <td class="num">15.39</td>
+          <td class="num pos">+2.99%</td>
+          <td class="num up">▲ 0.52%</td>
+        </tr>
+        <tr>
+          <td class="code">2450</td>
+          <td>神腦</td>
+          <td class="num">30.15</td>
+          <td class="num">29.27</td>
+          <td class="num pos">+3.02%</td>
+          <td class="num up">▲ 0.21%</td>
+        </tr>
+        <tr>
+          <td class="code">6112</td>
+          <td>邁達特</td>
+          <td class="num">47.55</td>
+          <td class="num">46.15</td>
+          <td class="num pos">+3.03%</td>
+          <td class="num up">▲ 0.1%</td>
+        </tr>
+        <tr>
+          <td class="code">1734</td>
+          <td>杏輝</td>
+          <td class="num">31.9</td>
+          <td class="num">30.94</td>
+          <td class="num pos">+3.09%</td>
+          <td class="num up">▲ 0.19%</td>
+        </tr>
+        <tr>
+          <td class="code">2404</td>
+          <td>漢唐</td>
+          <td class="num">1000.0</td>
+          <td class="num">970.0</td>
+          <td class="num pos">+3.09%</td>
+          <td class="num up">▲ 1.08%</td>
+        </tr>
+        <tr>
+          <td class="code">2033</td>
+          <td>佳大</td>
+          <td class="num">16.65</td>
+          <td class="num">16.15</td>
+          <td class="num pos">+3.10%</td>
+          <td class="num up">▲ 0.29%</td>
+        </tr>
+        <tr>
+          <td class="code">2459</td>
+          <td>敦吉</td>
+          <td class="num">68.3</td>
+          <td class="num">66.2</td>
+          <td class="num pos">+3.17%</td>
+          <td class="num up">▲ 0.17%</td>
+        </tr>
+        <tr>
+          <td class="code">3011</td>
+          <td>今皓</td>
+          <td class="num">13.85</td>
+          <td class="num">13.42</td>
+          <td class="num pos">+3.18%</td>
+          <td class="num up">▲ 0.26%</td>
+        </tr>
+        <tr>
+          <td class="code">2020</td>
+          <td>美亞</td>
+          <td class="num">23.05</td>
+          <td class="num">22.34</td>
+          <td class="num pos">+3.19%</td>
+          <td class="num up">▲ 0.35%</td>
+        </tr>
+        <tr>
+          <td class="code">2603</td>
+          <td>長榮</td>
+          <td class="num">201.5</td>
+          <td class="num">195.28</td>
+          <td class="num pos">+3.19%</td>
+          <td class="num up">▲ 0.48%</td>
+        </tr>
+        <tr>
+          <td class="code">6592</td>
+          <td>和潤企業</td>
+          <td class="num">63.7</td>
+          <td class="num">61.71</td>
+          <td class="num pos">+3.22%</td>
+          <td class="num up">▲ 0.08%</td>
+        </tr>
+        <tr>
+          <td class="code">1904</td>
+          <td>正隆</td>
+          <td class="num">18.75</td>
+          <td class="num">18.16</td>
+          <td class="num pos">+3.25%</td>
+          <td class="num up">▲ 0.07%</td>
+        </tr>
+        <tr>
+          <td class="code">2606</td>
+          <td>裕民</td>
+          <td class="num">63.5</td>
+          <td class="num">61.48</td>
+          <td class="num pos">+3.29%</td>
+          <td class="num up">▲ 0.02%</td>
+        </tr>
+        <tr>
+          <td class="code">1519</td>
+          <td>華城</td>
+          <td class="num">919.0</td>
+          <td class="num">889.6</td>
+          <td class="num pos">+3.30%</td>
+          <td class="num up">▲ 1.15%</td>
+        </tr>
+        <tr>
+          <td class="code">2801</td>
+          <td>彰銀</td>
+          <td class="num">21.45</td>
+          <td class="num">20.76</td>
+          <td class="num pos">+3.34%</td>
+          <td class="num up">▲ 0.21%</td>
+        </tr>
+        <tr>
+          <td class="code">3164</td>
+          <td>景岳</td>
+          <td class="num">18.0</td>
+          <td class="num">17.42</td>
+          <td class="num pos">+3.35%</td>
+          <td class="num up">▲ 0.1%</td>
+        </tr>
+        <tr>
+          <td class="code">6753</td>
+          <td>龍德造船</td>
+          <td class="num">142.0</td>
+          <td class="num">137.35</td>
+          <td class="num pos">+3.39%</td>
+          <td class="num up">▲ 0.73%</td>
+        </tr>
+        <tr>
+          <td class="code">1210</td>
+          <td>大成</td>
+          <td class="num">54.1</td>
+          <td class="num">52.3</td>
+          <td class="num pos">+3.45%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">2705</td>
+          <td>六福</td>
+          <td class="num">17.1</td>
+          <td class="num">16.53</td>
+          <td class="num pos">+3.45%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">6155</td>
+          <td>鈞寶</td>
+          <td class="num">49.4</td>
+          <td class="num">47.74</td>
+          <td class="num pos">+3.47%</td>
+          <td class="num up">▲ 0.77%</td>
+        </tr>
+        <tr>
+          <td class="code">6446</td>
+          <td>藥華藥</td>
+          <td class="num">650.0</td>
+          <td class="num">628.12</td>
+          <td class="num pos">+3.48%</td>
+          <td class="num up">▲ 1.1%</td>
+        </tr>
+        <tr>
+          <td class="code">5538</td>
+          <td>東明-KY</td>
+          <td class="num">32.25</td>
+          <td class="num">31.16</td>
+          <td class="num pos">+3.49%</td>
+          <td class="num up">▲ 0.43%</td>
+        </tr>
+        <tr>
+          <td class="code">2890</td>
+          <td>永豐金</td>
+          <td class="num">31.65</td>
+          <td class="num">30.58</td>
+          <td class="num pos">+3.51%</td>
+          <td class="num up">▲ 0.68%</td>
+        </tr>
+        <tr>
+          <td class="code">1324</td>
+          <td>地球</td>
+          <td class="num">11.25</td>
+          <td class="num">10.86</td>
+          <td class="num pos">+3.62%</td>
+          <td class="num up">▲ 0.28%</td>
+        </tr>
+        <tr>
+          <td class="code">1456</td>
+          <td>怡華</td>
+          <td class="num">14.0</td>
+          <td class="num">13.51</td>
+          <td class="num pos">+3.65%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">4526</td>
+          <td>東台</td>
+          <td class="num">34.25</td>
+          <td class="num">33.04</td>
+          <td class="num pos">+3.67%</td>
+          <td class="num up">▲ 0.37%</td>
+        </tr>
+        <tr>
+          <td class="code">2028</td>
+          <td>威致</td>
+          <td class="num">19.0</td>
+          <td class="num">18.32</td>
+          <td class="num pos">+3.70%</td>
+          <td class="num up">▲ 0.66%</td>
+        </tr>
+        <tr>
+          <td class="code">6754</td>
+          <td>匯僑設計</td>
+          <td class="num">47.15</td>
+          <td class="num">45.47</td>
+          <td class="num pos">+3.70%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">8367</td>
+          <td>建新國際</td>
+          <td class="num">43.1</td>
+          <td class="num">41.56</td>
+          <td class="num pos">+3.71%</td>
+          <td class="num up">▲ 0.16%</td>
+        </tr>
+        <tr>
+          <td class="code">2385</td>
+          <td>群光</td>
+          <td class="num">125.0</td>
+          <td class="num">120.47</td>
+          <td class="num pos">+3.76%</td>
+          <td class="num up">▲ 0.23%</td>
+        </tr>
+        <tr>
+          <td class="code">2887</td>
+          <td>台新新光金</td>
+          <td class="num">23.95</td>
+          <td class="num">23.06</td>
+          <td class="num pos">+3.84%</td>
+          <td class="num up">▲ 1.03%</td>
+        </tr>
+        <tr>
+          <td class="code">6776</td>
+          <td>展碁國際</td>
+          <td class="num">59.8</td>
+          <td class="num">57.59</td>
+          <td class="num pos">+3.84%</td>
+          <td class="num up">▲ 0.92%</td>
+        </tr>
+        <tr>
+          <td class="code">8443</td>
+          <td>阿瘦</td>
+          <td class="num">12.05</td>
+          <td class="num">11.6</td>
+          <td class="num pos">+3.90%</td>
+          <td class="num up">▲ 0.41%</td>
+        </tr>
+        <tr>
+          <td class="code">8103</td>
+          <td>瀚荃</td>
+          <td class="num">96.0</td>
+          <td class="num">92.36</td>
+          <td class="num pos">+3.94%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">2342</td>
+          <td>茂矽</td>
+          <td class="num">32.25</td>
+          <td class="num">31.01</td>
+          <td class="num pos">+3.99%</td>
+          <td class="num up">▲ 0.53%</td>
+        </tr>
+        <tr>
+          <td class="code">2006</td>
+          <td>東和鋼鐵</td>
+          <td class="num">70.2</td>
+          <td class="num">67.5</td>
+          <td class="num pos">+4.00%</td>
+          <td class="num up">▲ 0.12%</td>
+        </tr>
+        <tr>
+          <td class="code">2030</td>
+          <td>彰源</td>
+          <td class="num">16.45</td>
+          <td class="num">15.82</td>
+          <td class="num pos">+4.02%</td>
+          <td class="num up">▲ 0.81%</td>
+        </tr>
+        <tr>
+          <td class="code">8033</td>
+          <td>雷虎</td>
+          <td class="num">151.5</td>
+          <td class="num">145.6</td>
+          <td class="num pos">+4.05%</td>
+          <td class="num up">▲ 0.55%</td>
+        </tr>
+        <tr>
+          <td class="code">2441</td>
+          <td>超豐</td>
+          <td class="num">94.3</td>
+          <td class="num">90.6</td>
+          <td class="num pos">+4.08%</td>
+          <td class="num up">▲ 1.47%</td>
+        </tr>
+        <tr>
+          <td class="code">4770</td>
+          <td>上品</td>
+          <td class="num">239.5</td>
+          <td class="num">229.95</td>
+          <td class="num pos">+4.16%</td>
+          <td class="num up">▲ 0.46%</td>
+        </tr>
+        <tr>
+          <td class="code">2945</td>
+          <td>三商家購</td>
+          <td class="num">42.0</td>
+          <td class="num">40.32</td>
+          <td class="num pos">+4.17%</td>
+          <td class="num up">▲ 0.5%</td>
+        </tr>
+        <tr>
+          <td class="code">2014</td>
+          <td>中鴻</td>
+          <td class="num">18.3</td>
+          <td class="num">17.56</td>
+          <td class="num pos">+4.21%</td>
+          <td class="num up">▲ 0.85%</td>
+        </tr>
+        <tr>
+          <td class="code">9942</td>
+          <td>茂順</td>
+          <td class="num">118.0</td>
+          <td class="num">113.22</td>
+          <td class="num pos">+4.22%</td>
+          <td class="num up">▲ 0.6%</td>
+        </tr>
+        <tr>
+          <td class="code">2850</td>
+          <td>新產</td>
+          <td class="num">122.5</td>
+          <td class="num">117.53</td>
+          <td class="num pos">+4.23%</td>
+          <td class="num up">▲ 0.26%</td>
+        </tr>
+        <tr>
+          <td class="code">6189</td>
+          <td>豐藝</td>
+          <td class="num">47.7</td>
+          <td class="num">45.76</td>
+          <td class="num pos">+4.25%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">6965</td>
+          <td>中傑-KY</td>
+          <td class="num">88.7</td>
+          <td class="num">85.07</td>
+          <td class="num pos">+4.27%</td>
+          <td class="num up">▲ 0.13%</td>
+        </tr>
+        <tr>
+          <td class="code">9905</td>
+          <td>大華</td>
+          <td class="num">21.45</td>
+          <td class="num">20.54</td>
+          <td class="num pos">+4.43%</td>
+          <td class="num up">▲ 0.34%</td>
+        </tr>
+        <tr>
+          <td class="code">3416</td>
+          <td>融程電</td>
+          <td class="num">156.0</td>
+          <td class="num">149.38</td>
+          <td class="num pos">+4.44%</td>
+          <td class="num up">▲ 0.32%</td>
+        </tr>
+        <tr>
+          <td class="code">4904</td>
+          <td>遠傳</td>
+          <td class="num">95.6</td>
+          <td class="num">91.54</td>
+          <td class="num pos">+4.44%</td>
+          <td class="num up">▲ 0.51%</td>
+        </tr>
+        <tr>
+          <td class="code">2880</td>
+          <td>華南金</td>
+          <td class="num">35.25</td>
+          <td class="num">33.72</td>
+          <td class="num pos">+4.54%</td>
+          <td class="num up">▲ 0.66%</td>
+        </tr>
+        <tr>
+          <td class="code">8114</td>
+          <td>振樺電</td>
+          <td class="num">186.0</td>
+          <td class="num">177.9</td>
+          <td class="num pos">+4.55%</td>
+          <td class="num up">▲ 0.34%</td>
+        </tr>
+        <tr>
+          <td class="code">2373</td>
+          <td>震旦行</td>
+          <td class="num">58.7</td>
+          <td class="num">56.14</td>
+          <td class="num pos">+4.56%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">6116</td>
+          <td>彩晶</td>
+          <td class="num">8.99</td>
+          <td class="num">8.59</td>
+          <td class="num pos">+4.61%</td>
+          <td class="num up">▲ 0.95%</td>
+        </tr>
+        <tr>
+          <td class="code">6579</td>
+          <td>研揚</td>
+          <td class="num">118.5</td>
+          <td class="num">113.28</td>
+          <td class="num pos">+4.61%</td>
+          <td class="num up">▲ 0.35%</td>
+        </tr>
+        <tr>
+          <td class="code">2415</td>
+          <td>錩新</td>
+          <td class="num">28.9</td>
+          <td class="num">27.61</td>
+          <td class="num pos">+4.67%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">6443</td>
+          <td>元晶</td>
+          <td class="num">39.2</td>
+          <td class="num">37.44</td>
+          <td class="num pos">+4.70%</td>
+          <td class="num up">▲ 3.62%</td>
+        </tr>
+        <tr>
+          <td class="code">2302</td>
+          <td>麗正</td>
+          <td class="num">19.35</td>
+          <td class="num">18.47</td>
+          <td class="num pos">+4.76%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">3014</td>
+          <td>聯陽</td>
+          <td class="num">124.0</td>
+          <td class="num">118.33</td>
+          <td class="num pos">+4.80%</td>
+          <td class="num up">▲ 0.17%</td>
+        </tr>
+        <tr>
+          <td class="code">6192</td>
+          <td>巨路</td>
+          <td class="num">124.0</td>
+          <td class="num">118.33</td>
+          <td class="num pos">+4.80%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">2838</td>
+          <td>聯邦銀</td>
+          <td class="num">20.7</td>
+          <td class="num">19.74</td>
+          <td class="num pos">+4.84%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">8081</td>
+          <td>致新</td>
+          <td class="num">241.0</td>
+          <td class="num">229.8</td>
+          <td class="num pos">+4.87%</td>
+          <td class="num up">▲ 0.8%</td>
+        </tr>
+        <tr>
+          <td class="code">3045</td>
+          <td>台灣大</td>
+          <td class="num">113.5</td>
+          <td class="num">108.2</td>
+          <td class="num pos">+4.90%</td>
+          <td class="num up">▲ 0.39%</td>
+        </tr>
+        <tr>
+          <td class="code">6024</td>
+          <td>群益期</td>
+          <td class="num">55.8</td>
+          <td class="num">53.19</td>
+          <td class="num pos">+4.91%</td>
+          <td class="num up">▲ 0.54%</td>
+        </tr>
+        <tr>
+          <td class="code">8926</td>
+          <td>台汽電</td>
+          <td class="num">46.0</td>
+          <td class="num">43.83</td>
+          <td class="num pos">+4.94%</td>
+          <td class="num up">▲ 0.54%</td>
+        </tr>
+        <tr>
+          <td class="code">6581</td>
+          <td>鋼聯</td>
+          <td class="num">108.5</td>
+          <td class="num">103.34</td>
+          <td class="num pos">+4.99%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">4737</td>
+          <td>華廣</td>
+          <td class="num">62.2</td>
+          <td class="num">59.2</td>
+          <td class="num pos">+5.07%</td>
+          <td class="num up">▲ 0.28%</td>
+        </tr>
+        <tr>
+          <td class="code">2471</td>
+          <td>資通</td>
+          <td class="num">54.0</td>
+          <td class="num">51.38</td>
+          <td class="num pos">+5.09%</td>
+          <td class="num up">▲ 0.38%</td>
+        </tr>
+        <tr>
+          <td class="code">2834</td>
+          <td>臺企銀</td>
+          <td class="num">16.55</td>
+          <td class="num">15.73</td>
+          <td class="num pos">+5.23%</td>
+          <td class="num up">▲ 0.16%</td>
+        </tr>
+        <tr>
+          <td class="code">1313</td>
+          <td>聯成</td>
+          <td class="num">11.9</td>
+          <td class="num">11.3</td>
+          <td class="num pos">+5.27%</td>
+          <td class="num up">▲ 0.36%</td>
+        </tr>
+        <tr>
+          <td class="code">2324</td>
+          <td>仁寶</td>
+          <td class="num">31.45</td>
+          <td class="num">29.88</td>
+          <td class="num pos">+5.27%</td>
+          <td class="num up">▲ 0.37%</td>
+        </tr>
+        <tr>
+          <td class="code">4961</td>
+          <td>天鈺</td>
+          <td class="num">154.0</td>
+          <td class="num">146.25</td>
+          <td class="num pos">+5.30%</td>
+          <td class="num up">▲ 0.57%</td>
+        </tr>
+        <tr>
+          <td class="code">3057</td>
+          <td>喬鼎</td>
+          <td class="num">18.65</td>
+          <td class="num">17.71</td>
+          <td class="num pos">+5.32%</td>
+          <td class="num up">▲ 1.06%</td>
+        </tr>
+        <tr>
+          <td class="code">1472</td>
+          <td>三洋實業</td>
+          <td class="num">96.4</td>
+          <td class="num">91.51</td>
+          <td class="num pos">+5.34%</td>
+          <td class="num up">▲ 0.31%</td>
+        </tr>
+        <tr>
+          <td class="code">6282</td>
+          <td>康舒</td>
+          <td class="num">50.3</td>
+          <td class="num">47.75</td>
+          <td class="num pos">+5.35%</td>
+          <td class="num up">▲ 1.3%</td>
+        </tr>
+        <tr>
+          <td class="code">9917</td>
+          <td>中保科</td>
+          <td class="num">115.5</td>
+          <td class="num">109.58</td>
+          <td class="num pos">+5.41%</td>
+          <td class="num up">▲ 0.37%</td>
+        </tr>
+        <tr>
+          <td class="code">6756</td>
+          <td>威鋒電子</td>
+          <td class="num">82.2</td>
+          <td class="num">77.96</td>
+          <td class="num pos">+5.44%</td>
+          <td class="num up">▲ 0.32%</td>
+        </tr>
+        <tr>
+          <td class="code">2849</td>
+          <td>安泰銀</td>
+          <td class="num">14.15</td>
+          <td class="num">13.42</td>
+          <td class="num pos">+5.46%</td>
+          <td class="num up">▲ 0.28%</td>
+        </tr>
+        <tr>
+          <td class="code">6838</td>
+          <td>台新藥</td>
+          <td class="num">29.45</td>
+          <td class="num">27.92</td>
+          <td class="num pos">+5.47%</td>
+          <td class="num up">▲ 0.33%</td>
+        </tr>
+        <tr>
+          <td class="code">6951</td>
+          <td>青新-創</td>
+          <td class="num">80.8</td>
+          <td class="num">76.6</td>
+          <td class="num pos">+5.48%</td>
+          <td class="num up">▲ 0.54%</td>
+        </tr>
+        <tr>
+          <td class="code">8488</td>
+          <td>吉源-KY</td>
+          <td class="num">10.55</td>
+          <td class="num">10.0</td>
+          <td class="num pos">+5.50%</td>
+          <td class="num up">▲ 0.18%</td>
+        </tr>
+        <tr>
+          <td class="code">3694</td>
+          <td>海華</td>
+          <td class="num">62.4</td>
+          <td class="num">59.14</td>
+          <td class="num pos">+5.51%</td>
+          <td class="num up">▲ 0.05%</td>
+        </tr>
+        <tr>
+          <td class="code">1323</td>
+          <td>永裕</td>
+          <td class="num">20.65</td>
+          <td class="num">19.57</td>
+          <td class="num pos">+5.53%</td>
+          <td class="num up">▲ 0.28%</td>
+        </tr>
+        <tr>
+          <td class="code">2353</td>
+          <td>宏碁</td>
+          <td class="num">28.4</td>
+          <td class="num">26.91</td>
+          <td class="num pos">+5.55%</td>
+          <td class="num up">▲ 0.25%</td>
+        </tr>
+        <tr>
+          <td class="code">1308</td>
+          <td>亞聚</td>
+          <td class="num">15.35</td>
+          <td class="num">14.53</td>
+          <td class="num pos">+5.61%</td>
+          <td class="num up">▲ 0.57%</td>
+        </tr>
+        <tr>
+          <td class="code">2025</td>
+          <td>千興</td>
+          <td class="num">12.15</td>
+          <td class="num">11.5</td>
+          <td class="num pos">+5.63%</td>
+          <td class="num up">▲ 1.36%</td>
+        </tr>
+        <tr>
+          <td class="code">4771</td>
+          <td>望隼</td>
+          <td class="num">192.0</td>
+          <td class="num">181.57</td>
+          <td class="num pos">+5.74%</td>
+          <td class="num up">▲ 0.32%</td>
+        </tr>
+        <tr>
+          <td class="code">5388</td>
+          <td>中磊</td>
+          <td class="num">83.6</td>
+          <td class="num">79.01</td>
+          <td class="num pos">+5.80%</td>
+          <td class="num up">▲ 0.17%</td>
+        </tr>
+        <tr>
+          <td class="code">2392</td>
+          <td>正崴</td>
+          <td class="num">39.8</td>
+          <td class="num">37.61</td>
+          <td class="num pos">+5.83%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">3168</td>
+          <td>眾福科</td>
+          <td class="num">43.95</td>
+          <td class="num">41.52</td>
+          <td class="num pos">+5.86%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">3607</td>
+          <td>谷崧</td>
+          <td class="num">15.25</td>
+          <td class="num">14.4</td>
+          <td class="num pos">+5.88%</td>
+          <td class="num up">▲ 0.49%</td>
+        </tr>
+        <tr>
+          <td class="code">2301</td>
+          <td>光寶科</td>
+          <td class="num">171.5</td>
+          <td class="num">161.76</td>
+          <td class="num pos">+6.02%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">2466</td>
+          <td>冠西電</td>
+          <td class="num">61.5</td>
+          <td class="num">57.99</td>
+          <td class="num pos">+6.06%</td>
+          <td class="num up">▲ 0.67%</td>
+        </tr>
+        <tr>
+          <td class="code">6449</td>
+          <td>鈺邦</td>
+          <td class="num">176.0</td>
+          <td class="num">165.9</td>
+          <td class="num pos">+6.09%</td>
+          <td class="num up">▲ 0.08%</td>
+        </tr>
+        <tr>
+          <td class="code">3038</td>
+          <td>全台</td>
+          <td class="num">23.2</td>
+          <td class="num">21.86</td>
+          <td class="num pos">+6.13%</td>
+          <td class="num up">▲ 0.85%</td>
+        </tr>
+        <tr>
+          <td class="code">2062</td>
+          <td>橋椿</td>
+          <td class="num">22.65</td>
+          <td class="num">21.33</td>
+          <td class="num pos">+6.18%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">5007</td>
+          <td>三星</td>
+          <td class="num">58.1</td>
+          <td class="num">54.71</td>
+          <td class="num pos">+6.20%</td>
+          <td class="num up">▲ 0.5%</td>
+        </tr>
+        <tr>
+          <td class="code">4440</td>
+          <td>宜新實業</td>
+          <td class="num">17.9</td>
+          <td class="num">16.84</td>
+          <td class="num pos">+6.31%</td>
+          <td class="num up">▲ 0.15%</td>
+        </tr>
+        <tr>
+          <td class="code">1466</td>
+          <td>聚隆</td>
+          <td class="num">17.2</td>
+          <td class="num">16.15</td>
+          <td class="num pos">+6.52%</td>
+          <td class="num up">▲ 0.97%</td>
+        </tr>
+        <tr>
+          <td class="code">2474</td>
+          <td>可成</td>
+          <td class="num">210.0</td>
+          <td class="num">197.1</td>
+          <td class="num pos">+6.54%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">2645</td>
+          <td>長榮航太</td>
+          <td class="num">166.5</td>
+          <td class="num">156.25</td>
+          <td class="num pos">+6.56%</td>
+          <td class="num up">▲ 0.6%</td>
+        </tr>
+        <tr>
+          <td class="code">6164</td>
+          <td>華興</td>
+          <td class="num">13.1</td>
+          <td class="num">12.29</td>
+          <td class="num pos">+6.57%</td>
+          <td class="num up">▲ 1.28%</td>
+        </tr>
+        <tr>
+          <td class="code">2851</td>
+          <td>中再保</td>
+          <td class="num">29.85</td>
+          <td class="num">28.0</td>
+          <td class="num pos">+6.63%</td>
+          <td class="num up">▲ 0.63%</td>
+        </tr>
+        <tr>
+          <td class="code">3305</td>
+          <td>昇貿</td>
+          <td class="num">117.5</td>
+          <td class="num">110.18</td>
+          <td class="num pos">+6.64%</td>
+          <td class="num up">▲ 0.89%</td>
+        </tr>
+        <tr>
+          <td class="code">2103</td>
+          <td>台橡</td>
+          <td class="num">18.7</td>
+          <td class="num">17.53</td>
+          <td class="num pos">+6.66%</td>
+          <td class="num up">▲ 0.98%</td>
+        </tr>
+        <tr>
+          <td class="code">2414</td>
+          <td>精技</td>
+          <td class="num">45.2</td>
+          <td class="num">42.37</td>
+          <td class="num pos">+6.68%</td>
+          <td class="num up">▲ 0.51%</td>
+        </tr>
+        <tr>
+          <td class="code">6862</td>
+          <td>三集瑞-KY</td>
+          <td class="num">191.5</td>
+          <td class="num">179.4</td>
+          <td class="num pos">+6.74%</td>
+          <td class="num up">▲ 0.62%</td>
+        </tr>
+        <tr>
+          <td class="code">1423</td>
+          <td>利華</td>
+          <td class="num">41.5</td>
+          <td class="num">38.88</td>
+          <td class="num pos">+6.75%</td>
+          <td class="num up">▲ 0.34%</td>
+        </tr>
+        <tr>
+          <td class="code">6152</td>
+          <td>百一</td>
+          <td class="num">16.2</td>
+          <td class="num">15.17</td>
+          <td class="num pos">+6.78%</td>
+          <td class="num up">▲ 2.6%</td>
+        </tr>
+        <tr>
+          <td class="code">2425</td>
+          <td>承啟</td>
+          <td class="num">31.2</td>
+          <td class="num">29.21</td>
+          <td class="num pos">+6.81%</td>
+          <td class="num up">▲ 0.46%</td>
+        </tr>
+        <tr>
+          <td class="code">2637</td>
+          <td>慧洋-KY</td>
+          <td class="num">74.8</td>
+          <td class="num">70.03</td>
+          <td class="num pos">+6.82%</td>
+          <td class="num up">▲ 0.48%</td>
+        </tr>
+        <tr>
+          <td class="code">3308</td>
+          <td>聯德</td>
+          <td class="num">22.7</td>
+          <td class="num">21.25</td>
+          <td class="num pos">+6.85%</td>
+          <td class="num up">▲ 1.8%</td>
+        </tr>
+        <tr>
+          <td class="code">2605</td>
+          <td>新興</td>
+          <td class="num">34.2</td>
+          <td class="num">31.98</td>
+          <td class="num pos">+6.94%</td>
+          <td class="num up">▲ 0.92%</td>
+        </tr>
+        <tr>
+          <td class="code">1762</td>
+          <td>中化生</td>
+          <td class="num">28.65</td>
+          <td class="num">26.79</td>
+          <td class="num pos">+6.95%</td>
+          <td class="num up">▲ 0.7%</td>
+        </tr>
+        <tr>
+          <td class="code">1256</td>
+          <td>鮮活果汁-KY</td>
+          <td class="num">165.5</td>
+          <td class="num">154.72</td>
+          <td class="num pos">+6.96%</td>
+          <td class="num up">▲ 0.88%</td>
+        </tr>
+        <tr>
+          <td class="code">2428</td>
+          <td>興勤</td>
+          <td class="num">184.0</td>
+          <td class="num">172.0</td>
+          <td class="num pos">+6.98%</td>
+          <td class="num up">▲ 0.06%</td>
+        </tr>
+        <tr>
+          <td class="code">3094</td>
+          <td>聯傑</td>
+          <td class="num">26.05</td>
+          <td class="num">24.34</td>
+          <td class="num pos">+7.00%</td>
+          <td class="num up">▲ 0.47%</td>
+        </tr>
+        <tr>
+          <td class="code">6916</td>
+          <td>華凌</td>
+          <td class="num">19.55</td>
+          <td class="num">18.27</td>
+          <td class="num pos">+7.01%</td>
+          <td class="num up">▲ 0.48%</td>
+        </tr>
+        <tr>
+          <td class="code">3592</td>
+          <td>瑞鼎</td>
+          <td class="num">242.0</td>
+          <td class="num">225.82</td>
+          <td class="num pos">+7.16%</td>
+          <td class="num up">▲ 0.74%</td>
+        </tr>
+        <tr>
+          <td class="code">1531</td>
+          <td>高林股</td>
+          <td class="num">13.35</td>
+          <td class="num">12.45</td>
+          <td class="num pos">+7.19%</td>
+          <td class="num up">▲ 0.65%</td>
+        </tr>
+        <tr>
+          <td class="code">2356</td>
+          <td>英業達</td>
+          <td class="num">47.35</td>
+          <td class="num">44.16</td>
+          <td class="num pos">+7.21%</td>
+          <td class="num up">▲ 0.03%</td>
+        </tr>
+        <tr>
+          <td class="code">2501</td>
+          <td>國建</td>
+          <td class="num">24.8</td>
+          <td class="num">23.13</td>
+          <td class="num pos">+7.22%</td>
+          <td class="num up">▲ 0.45%</td>
+        </tr>
+        <tr>
+          <td class="code">2897</td>
+          <td>王道銀行</td>
+          <td class="num">10.3</td>
+          <td class="num">9.6</td>
+          <td class="num pos">+7.27%</td>
+          <td class="num up">▲ 0.62%</td>
+        </tr>
+        <tr>
+          <td class="code">1714</td>
+          <td>和桐</td>
+          <td class="num">9.92</td>
+          <td class="num">9.24</td>
+          <td class="num pos">+7.33%</td>
+          <td class="num up">▲ 0.93%</td>
+        </tr>
+        <tr>
+          <td class="code">3528</td>
+          <td>安馳</td>
+          <td class="num">73.3</td>
+          <td class="num">68.24</td>
+          <td class="num pos">+7.42%</td>
+          <td class="num up">▲ 0.24%</td>
+        </tr>
+        <tr>
+          <td class="code">2108</td>
+          <td>南帝</td>
+          <td class="num">25.65</td>
+          <td class="num">23.86</td>
+          <td class="num pos">+7.49%</td>
+          <td class="num up">▲ 0.72%</td>
+        </tr>
+        <tr>
+          <td class="code">8070</td>
+          <td>長華*</td>
+          <td class="num">48.05</td>
+          <td class="num">44.69</td>
+          <td class="num pos">+7.52%</td>
+          <td class="num up">▲ 0.36%</td>
+        </tr>
+        <tr>
+          <td class="code">2939</td>
+          <td>永邑-KY</td>
+          <td class="num">25.95</td>
+          <td class="num">24.1</td>
+          <td class="num pos">+7.70%</td>
+          <td class="num up">▲ 0.14%</td>
+        </tr>
+        <tr>
+          <td class="code">1708</td>
+          <td>東鹼</td>
+          <td class="num">39.2</td>
+          <td class="num">36.39</td>
+          <td class="num pos">+7.72%</td>
+          <td class="num up">▲ 0.92%</td>
+        </tr>
+        <tr>
+          <td class="code">5222</td>
+          <td>全訊</td>
+          <td class="num">142.5</td>
+          <td class="num">132.24</td>
+          <td class="num pos">+7.76%</td>
+          <td class="num up">▲ 0.55%</td>
+        </tr>
+        <tr>
+          <td class="code">2420</td>
+          <td>新巨</td>
+          <td class="num">55.8</td>
+          <td class="num">51.77</td>
+          <td class="num pos">+7.78%</td>
+          <td class="num up">▲ 0.51%</td>
+        </tr>
+        <tr>
+          <td class="code">8104</td>
+          <td>錸寶</td>
+          <td class="num">38.2</td>
+          <td class="num">35.43</td>
+          <td class="num pos">+7.82%</td>
+          <td class="num up">▲ 1.14%</td>
+        </tr>
+        <tr>
+          <td class="code">4766</td>
+          <td>南寶</td>
+          <td class="num">351.0</td>
+          <td class="num">325.25</td>
+          <td class="num pos">+7.92%</td>
+          <td class="num up">▲ 0.44%</td>
+        </tr>
+        <tr>
+          <td class="code">6799</td>
+          <td>來頡</td>
+          <td class="num">87.9</td>
+          <td class="num">81.38</td>
+          <td class="num pos">+8.01%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">6689</td>
+          <td>伊雲谷</td>
+          <td class="num">71.8</td>
+          <td class="num">66.4</td>
+          <td class="num pos">+8.13%</td>
+          <td class="num up">▲ 0.55%</td>
+        </tr>
+        <tr>
+          <td class="code">1455</td>
+          <td>集盛</td>
+          <td class="num">9.15</td>
+          <td class="num">8.45</td>
+          <td class="num pos">+8.23%</td>
+          <td class="num up">▲ 0.72%</td>
+        </tr>
+        <tr>
+          <td class="code">1409</td>
+          <td>新纖</td>
+          <td class="num">16.85</td>
+          <td class="num">15.57</td>
+          <td class="num pos">+8.24%</td>
+          <td class="num up">▲ 0.57%</td>
+        </tr>
+        <tr>
+          <td class="code">3034</td>
+          <td>聯詠</td>
+          <td class="num">415.5</td>
+          <td class="num">383.85</td>
+          <td class="num pos">+8.25%</td>
+          <td class="num up">▲ 0.37%</td>
+        </tr>
+        <tr>
+          <td class="code">7788</td>
+          <td>松川精密</td>
+          <td class="num">165.5</td>
+          <td class="num">152.88</td>
+          <td class="num pos">+8.26%</td>
+          <td class="num up">▲ 1.98%</td>
+        </tr>
+        <tr>
+          <td class="code">3376</td>
+          <td>新日興</td>
+          <td class="num">224.0</td>
+          <td class="num">206.85</td>
+          <td class="num pos">+8.29%</td>
+          <td class="num up">▲ 0.52%</td>
+        </tr>
+        <tr>
+          <td class="code">2535</td>
+          <td>達欣工</td>
+          <td class="num">70.6</td>
+          <td class="num">65.19</td>
+          <td class="num pos">+8.30%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">2883</td>
+          <td>凱基金</td>
+          <td class="num">20.7</td>
+          <td class="num">19.11</td>
+          <td class="num pos">+8.33%</td>
+          <td class="num up">▲ 1.23%</td>
+        </tr>
+        <tr>
+          <td class="code">6792</td>
+          <td>詠業</td>
+          <td class="num">61.0</td>
+          <td class="num">56.19</td>
+          <td class="num pos">+8.56%</td>
+          <td class="num up">▲ 0.92%</td>
+        </tr>
+        <tr>
+          <td class="code">8210</td>
+          <td>勤誠</td>
+          <td class="num">1020.0</td>
+          <td class="num">938.35</td>
+          <td class="num pos">+8.70%</td>
+          <td class="num up">▲ 0.69%</td>
+        </tr>
+        <tr>
+          <td class="code">7631</td>
+          <td>聚賢研發-創</td>
+          <td class="num">134.0</td>
+          <td class="num">123.2</td>
+          <td class="num pos">+8.76%</td>
+          <td class="num up">▲ 0.27%</td>
+        </tr>
+        <tr>
+          <td class="code">4564</td>
+          <td>元翎</td>
+          <td class="num">19.7</td>
+          <td class="num">18.11</td>
+          <td class="num pos">+8.78%</td>
+          <td class="num up">▲ 0.82%</td>
+        </tr>
+        <tr>
+          <td class="code">3150</td>
+          <td>鈺寶-創</td>
+          <td class="num">20.25</td>
+          <td class="num">18.61</td>
+          <td class="num pos">+8.83%</td>
+          <td class="num up">▲ 0.54%</td>
+        </tr>
+        <tr>
+          <td class="code">2105</td>
+          <td>正新</td>
+          <td class="num">33.5</td>
+          <td class="num">30.78</td>
+          <td class="num pos">+8.84%</td>
+          <td class="num up">▲ 0.36%</td>
+        </tr>
+        <tr>
+          <td class="code">3576</td>
+          <td>聯合再生</td>
+          <td class="num">16.85</td>
+          <td class="num">15.48</td>
+          <td class="num pos">+8.85%</td>
+          <td class="num up">▲ 3.54%</td>
+        </tr>
+        <tr>
+          <td class="code">2233</td>
+          <td>宇隆</td>
+          <td class="num">245.5</td>
+          <td class="num">225.47</td>
+          <td class="num pos">+8.88%</td>
+          <td class="num up">▲ 1.13%</td>
+        </tr>
+        <tr>
+          <td class="code">2461</td>
+          <td>光群雷</td>
+          <td class="num">17.95</td>
+          <td class="num">16.48</td>
+          <td class="num pos">+8.92%</td>
+          <td class="num up">▲ 0.75%</td>
+        </tr>
+        <tr>
+          <td class="code">3356</td>
+          <td>奇偶</td>
+          <td class="num">52.5</td>
+          <td class="num">48.2</td>
+          <td class="num pos">+8.92%</td>
+          <td class="num up">▲ 0.58%</td>
+        </tr>
+        <tr>
+          <td class="code">5285</td>
+          <td>界霖</td>
+          <td class="num">55.5</td>
+          <td class="num">50.91</td>
+          <td class="num pos">+9.03%</td>
+          <td class="num up">▲ 0.49%</td>
+        </tr>
+        <tr>
+          <td class="code">2010</td>
+          <td>春源</td>
+          <td class="num">24.85</td>
+          <td class="num">22.75</td>
+          <td class="num pos">+9.22%</td>
+          <td class="num up">▲ 0.98%</td>
+        </tr>
+        <tr>
+          <td class="code">4934</td>
+          <td>太極</td>
+          <td class="num">17.75</td>
+          <td class="num">16.25</td>
+          <td class="num pos">+9.23%</td>
+          <td class="num up">▲ 1.48%</td>
+        </tr>
+        <tr>
+          <td class="code">1203</td>
+          <td>味王</td>
+          <td class="num">43.8</td>
+          <td class="num">40.09</td>
+          <td class="num pos">+9.24%</td>
+          <td class="num up">▲ 0.49%</td>
+        </tr>
+        <tr>
+          <td class="code">6414</td>
+          <td>樺漢</td>
+          <td class="num">312.5</td>
+          <td class="num">285.95</td>
+          <td class="num pos">+9.28%</td>
+          <td class="num up">▲ 0.39%</td>
+        </tr>
+        <tr>
+          <td class="code">3006</td>
+          <td>晶豪科</td>
+          <td class="num">161.0</td>
+          <td class="num">147.26</td>
+          <td class="num pos">+9.33%</td>
+          <td class="num up">▲ 2.83%</td>
+        </tr>
+        <tr>
+          <td class="code">2910</td>
+          <td>統領</td>
+          <td class="num">22.6</td>
+          <td class="num">20.65</td>
+          <td class="num pos">+9.42%</td>
+          <td class="num up">▲ 0.61%</td>
+        </tr>
+        <tr>
+          <td class="code">1305</td>
+          <td>華夏</td>
+          <td class="num">14.45</td>
+          <td class="num">13.19</td>
+          <td class="num pos">+9.53%</td>
+          <td class="num up">▲ 1.15%</td>
+        </tr>
+        <tr>
+          <td class="code">3004</td>
+          <td>豐達科</td>
+          <td class="num">116.5</td>
+          <td class="num">106.37</td>
+          <td class="num pos">+9.53%</td>
+          <td class="num up">▲ 0.93%</td>
+        </tr>
+        <tr>
+          <td class="code">6117</td>
+          <td>迎廣</td>
+          <td class="num">84.6</td>
+          <td class="num">77.24</td>
+          <td class="num pos">+9.53%</td>
+          <td class="num up">▲ 0.29%</td>
+        </tr>
+        <tr>
+          <td class="code">1773</td>
+          <td>勝一</td>
+          <td class="num">163.5</td>
+          <td class="num">149.1</td>
+          <td class="num pos">+9.66%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">5871</td>
+          <td>中租-KY</td>
+          <td class="num">117.5</td>
+          <td class="num">107.1</td>
+          <td class="num pos">+9.71%</td>
+          <td class="num up">▲ 0.8%</td>
+        </tr>
+        <tr>
+          <td class="code">1776</td>
+          <td>展宇</td>
+          <td class="num">16.95</td>
+          <td class="num">15.45</td>
+          <td class="num pos">+9.74%</td>
+          <td class="num up">▲ 0.6%</td>
+        </tr>
+        <tr>
+          <td class="code">3022</td>
+          <td>威強電</td>
+          <td class="num">70.9</td>
+          <td class="num">64.58</td>
+          <td class="num pos">+9.79%</td>
+          <td class="num up">▲ 0.26%</td>
+        </tr>
+        <tr>
+          <td class="code">3033</td>
+          <td>威健</td>
+          <td class="num">34.85</td>
+          <td class="num">31.74</td>
+          <td class="num pos">+9.80%</td>
+          <td class="num up">▲ 0.75%</td>
+        </tr>
+        <tr>
+          <td class="code">6214</td>
+          <td>精誠</td>
+          <td class="num">127.5</td>
+          <td class="num">116.08</td>
+          <td class="num pos">+9.84%</td>
+          <td class="num up">▲ 0.3%</td>
+        </tr>
+        <tr>
+          <td class="code">1225</td>
+          <td>福懋油</td>
+          <td class="num">33.35</td>
+          <td class="num">30.35</td>
+          <td class="num pos">+9.88%</td>
+          <td class="num up">▲ 0.46%</td>
+        </tr>
+        <tr>
+          <td class="code">1709</td>
+          <td>和益</td>
+          <td class="num">19.05</td>
+          <td class="num">17.33</td>
+          <td class="num pos">+9.89%</td>
+          <td class="num up">▲ 0.61%</td>
+        </tr>
+        <tr>
+          <td class="code">2488</td>
+          <td>漢平</td>
+          <td class="num">52.1</td>
+          <td class="num">47.41</td>
+          <td class="num pos">+9.90%</td>
+          <td class="num up">▲ 0.66%</td>
+        </tr>
+        <tr>
+          <td class="code">9929</td>
+          <td>秋雨</td>
+          <td class="num">12.3</td>
+          <td class="num">11.18</td>
+          <td class="num pos">+9.97%</td>
+          <td class="num up">▲ 0.63%</td>
+        </tr>
+        <tr>
+          <td class="code">8105</td>
+          <td>凌巨</td>
+          <td class="num">14.05</td>
+          <td class="num">12.77</td>
+          <td class="num pos">+10.02%</td>
+          <td class="num up">▲ 1.23%</td>
+        </tr>
+        <tr>
+          <td class="code">4722</td>
+          <td>國精化</td>
+          <td class="num">193.5</td>
+          <td class="num">175.68</td>
+          <td class="num pos">+10.15%</td>
+          <td class="num up">▲ 1.09%</td>
+        </tr>
+        <tr>
+          <td class="code">2387</td>
+          <td>精元</td>
+          <td class="num">41.3</td>
+          <td class="num">37.48</td>
+          <td class="num pos">+10.19%</td>
+          <td class="num up">▲ 0.66%</td>
+        </tr>
+        <tr>
+          <td class="code">0056</td>
+          <td>元大高股息</td>
+          <td class="num">41.97</td>
+          <td class="num">38.06</td>
+          <td class="num pos">+10.26%</td>
+          <td class="num up">▲ 0.83%</td>
+        </tr>
+        <tr>
+          <td class="code">3708</td>
+          <td>上緯投控</td>
+          <td class="num">128.0</td>
+          <td class="num">116.08</td>
+          <td class="num pos">+10.27%</td>
+          <td class="num up">▲ 1.09%</td>
+        </tr>
+        <tr>
+          <td class="code">3413</td>
+          <td>京鼎</td>
+          <td class="num">327.5</td>
+          <td class="num">296.75</td>
+          <td class="num pos">+10.36%</td>
+          <td class="num up">▲ 0.51%</td>
+        </tr>
+        <tr>
+          <td class="code">3090</td>
+          <td>日電貿</td>
+          <td class="num">108.0</td>
+          <td class="num">97.85</td>
+          <td class="num pos">+10.38%</td>
+          <td class="num up">▲ 1.05%</td>
+        </tr>
+        <tr>
+          <td class="code">2413</td>
+          <td>環科</td>
+          <td class="num">50.8</td>
+          <td class="num">46.0</td>
+          <td class="num pos">+10.42%</td>
+          <td class="num up">▲ 2.64%</td>
+        </tr>
+        <tr>
+          <td class="code">6120</td>
+          <td>達運</td>
+          <td class="num">14.6</td>
+          <td class="num">13.22</td>
+          <td class="num pos">+10.44%</td>
+          <td class="num up">▲ 0.84%</td>
+        </tr>
+        <tr>
+          <td class="code">2406</td>
+          <td>國碩</td>
+          <td class="num">33.7</td>
+          <td class="num">30.5</td>
+          <td class="num pos">+10.49%</td>
+          <td class="num up">▲ 1.73%</td>
+        </tr>
+        <tr>
+          <td class="code">3003</td>
+          <td>健和興</td>
+          <td class="num">54.8</td>
+          <td class="num">49.55</td>
+          <td class="num pos">+10.60%</td>
+          <td class="num up">▲ 0.68%</td>
+        </tr>
+        <tr>
+          <td class="code">5471</td>
+          <td>松翰</td>
+          <td class="num">41.95</td>
+          <td class="num">37.87</td>
+          <td class="num pos">+10.77%</td>
+          <td class="num up">▲ 1.02%</td>
+        </tr>
+        <tr>
+          <td class="code">2444</td>
+          <td>兆勁</td>
+          <td class="num">14.05</td>
+          <td class="num">12.68</td>
+          <td class="num pos">+10.83%</td>
+          <td class="num up">▲ 1.14%</td>
+        </tr>
+        <tr>
+          <td class="code">4583</td>
+          <td>台灣精銳</td>
+          <td class="num">750.0</td>
+          <td class="num">676.72</td>
+          <td class="num pos">+10.83%</td>
+          <td class="num up">▲ 0.55%</td>
+        </tr>
+        <tr>
+          <td class="code">2312</td>
+          <td>金寶</td>
+          <td class="num">27.15</td>
+          <td class="num">24.46</td>
+          <td class="num pos">+10.97%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">3035</td>
+          <td>智原</td>
+          <td class="num">180.0</td>
+          <td class="num">162.18</td>
+          <td class="num pos">+10.99%</td>
+          <td class="num up">▲ 0.22%</td>
+        </tr>
+        <tr>
+          <td class="code">6136</td>
+          <td>富爾特</td>
+          <td class="num">26.95</td>
+          <td class="num">24.28</td>
+          <td class="num pos">+11.02%</td>
+          <td class="num up">▲ 0.63%</td>
+        </tr>
+        <tr>
+          <td class="code">4916</td>
+          <td>事欣科</td>
+          <td class="num">67.2</td>
+          <td class="num">60.51</td>
+          <td class="num pos">+11.05%</td>
+          <td class="num up">▲ 1.63%</td>
+        </tr>
+        <tr>
+          <td class="code">7740</td>
+          <td>熙特爾-創</td>
+          <td class="num">188.0</td>
+          <td class="num">169.3</td>
+          <td class="num pos">+11.05%</td>
+          <td class="num up">▲ 1.04%</td>
+        </tr>
+        <tr>
+          <td class="code">6552</td>
+          <td>易華電</td>
+          <td class="num">30.4</td>
+          <td class="num">27.37</td>
+          <td class="num pos">+11.08%</td>
+          <td class="num up">▲ 0.98%</td>
+        </tr>
+        <tr>
+          <td class="code">6269</td>
+          <td>台郡</td>
+          <td class="num">67.1</td>
+          <td class="num">60.39</td>
+          <td class="num pos">+11.11%</td>
+          <td class="num up">▲ 0.78%</td>
+        </tr>
+        <tr>
+          <td class="code">6655</td>
+          <td>科定</td>
+          <td class="num">140.0</td>
+          <td class="num">125.83</td>
+          <td class="num pos">+11.27%</td>
+          <td class="num up">▲ 1.06%</td>
+        </tr>
+        <tr>
+          <td class="code">2379</td>
+          <td>瑞昱</td>
+          <td class="num">551.0</td>
+          <td class="num">494.93</td>
+          <td class="num pos">+11.33%</td>
+          <td class="num up">▲ 0.18%</td>
+        </tr>
+        <tr>
+          <td class="code">6691</td>
+          <td>洋基工程</td>
+          <td class="num">677.0</td>
+          <td class="num">608.05</td>
+          <td class="num pos">+11.34%</td>
+          <td class="num up">▲ 1.52%</td>
+        </tr>
+        <tr>
+          <td class="code">8213</td>
+          <td>志超</td>
+          <td class="num">38.9</td>
+          <td class="num">34.92</td>
+          <td class="num pos">+11.40%</td>
+          <td class="num up">▲ 0.84%</td>
+        </tr>
+        <tr>
+          <td class="code">1342</td>
+          <td>八貫</td>
+          <td class="num">98.7</td>
+          <td class="num">88.37</td>
+          <td class="num pos">+11.69%</td>
+          <td class="num up">▲ 0.93%</td>
+        </tr>
+        <tr>
+          <td class="code">8112</td>
+          <td>至上</td>
+          <td class="num">86.8</td>
+          <td class="num">77.63</td>
+          <td class="num pos">+11.81%</td>
+          <td class="num up">▲ 0.76%</td>
+        </tr>
+        <tr>
+          <td class="code">2417</td>
+          <td>圓剛</td>
+          <td class="num">42.2</td>
+          <td class="num">37.74</td>
+          <td class="num pos">+11.83%</td>
+          <td class="num up">▲ 0.73%</td>
+        </tr>
+        <tr>
+          <td class="code">2329</td>
+          <td>華泰</td>
+          <td class="num">62.0</td>
+          <td class="num">55.39</td>
+          <td class="num pos">+11.94%</td>
+          <td class="num up">▲ 1.44%</td>
+        </tr>
+        <tr>
+          <td class="code">2236</td>
+          <td>百達-KY</td>
+          <td class="num">129.0</td>
+          <td class="num">115.13</td>
+          <td class="num pos">+12.04%</td>
+          <td class="num up">▲ 1.23%</td>
+        </tr>
+        <tr>
+          <td class="code">2458</td>
+          <td>義隆</td>
+          <td class="num">137.0</td>
+          <td class="num">122.23</td>
+          <td class="num pos">+12.08%</td>
+          <td class="num up">▲ 0.52%</td>
+        </tr>
+        <tr>
+          <td class="code">2440</td>
+          <td>太空梭</td>
+          <td class="num">16.8</td>
+          <td class="num">14.99</td>
+          <td class="num pos">+12.09%</td>
+          <td class="num up">▲ 1.58%</td>
+        </tr>
+        <tr>
+          <td class="code">2316</td>
+          <td>楠梓電</td>
+          <td class="num">115.5</td>
+          <td class="num">102.87</td>
+          <td class="num pos">+12.28%</td>
+          <td class="num up">▲ 0.56%</td>
+        </tr>
+        <tr>
+          <td class="code">3704</td>
+          <td>合勤控</td>
+          <td class="num">38.0</td>
+          <td class="num">33.84</td>
+          <td class="num pos">+12.28%</td>
+          <td class="num up">▲ 0.39%</td>
+        </tr>
+        <tr>
+          <td class="code">2548</td>
+          <td>華固</td>
+          <td class="num">129.5</td>
+          <td class="num">115.3</td>
+          <td class="num pos">+12.32%</td>
+          <td class="num up">▲ 1.1%</td>
+        </tr>
+        <tr>
+          <td class="code">3669</td>
+          <td>圓展</td>
+          <td class="num">39.25</td>
+          <td class="num">34.91</td>
+          <td class="num pos">+12.44%</td>
+          <td class="num up">▲ 1.42%</td>
+        </tr>
+        <tr>
+          <td class="code">2432</td>
+          <td>倚天酷碁-創</td>
+          <td class="num">29.3</td>
+          <td class="num">26.05</td>
+          <td class="num pos">+12.48%</td>
+          <td class="num up">▲ 0.49%</td>
+        </tr>
+        <tr>
+          <td class="code">2248</td>
+          <td>華勝-KY</td>
+          <td class="num">55.6</td>
+          <td class="num">49.42</td>
+          <td class="num pos">+12.51%</td>
+          <td class="num up">▲ 0.6%</td>
+        </tr>
+        <tr>
+          <td class="code">3010</td>
+          <td>華立</td>
+          <td class="num">137.0</td>
+          <td class="num">121.62</td>
+          <td class="num pos">+12.64%</td>
+          <td class="num up">▲ 1.14%</td>
+        </tr>
+        <tr>
+          <td class="code">9933</td>
+          <td>中鼎</td>
+          <td class="num">37.2</td>
+          <td class="num">33.01</td>
+          <td class="num pos">+12.69%</td>
+          <td class="num up">▲ 0.49%</td>
+        </tr>
+        <tr>
+          <td class="code">2363</td>
+          <td>矽統</td>
+          <td class="num">57.2</td>
+          <td class="num">50.73</td>
+          <td class="num pos">+12.76%</td>
+          <td class="num up">▲ 0.76%</td>
+        </tr>
+        <tr>
+          <td class="code">1723</td>
+          <td>中碳</td>
+          <td class="num">83.3</td>
+          <td class="num">73.78</td>
+          <td class="num pos">+12.90%</td>
+          <td class="num up">▲ 0.85%</td>
+        </tr>
+        <tr>
+          <td class="code">5515</td>
+          <td>建國</td>
+          <td class="num">40.3</td>
+          <td class="num">35.7</td>
+          <td class="num pos">+12.90%</td>
+          <td class="num up">▲ 1.13%</td>
+        </tr>
+        <tr>
+          <td class="code">6209</td>
+          <td>今國光</td>
+          <td class="num">68.2</td>
+          <td class="num">60.41</td>
+          <td class="num pos">+12.90%</td>
+          <td class="num up">▲ 0.99%</td>
+        </tr>
+        <tr>
+          <td class="code">8016</td>
+          <td>矽創</td>
+          <td class="num">219.0</td>
+          <td class="num">193.95</td>
+          <td class="num pos">+12.92%</td>
+          <td class="num up">▲ 1.03%</td>
+        </tr>
+        <tr>
+          <td class="code">1304</td>
+          <td>台聚</td>
+          <td class="num">14.55</td>
+          <td class="num">12.88</td>
+          <td class="num pos">+12.94%</td>
+          <td class="num up">▲ 1.16%</td>
+        </tr>
+        <tr>
+          <td class="code">2059</td>
+          <td>川湖</td>
+          <td class="num">3855.0</td>
+          <td class="num">3410.75</td>
+          <td class="num pos">+13.02%</td>
+          <td class="num up">▲ 0.58%</td>
+        </tr>
+        <tr>
+          <td class="code">4551</td>
+          <td>智伸科</td>
+          <td class="num">140.5</td>
+          <td class="num">124.15</td>
+          <td class="num pos">+13.17%</td>
+          <td class="num up">▲ 0.89%</td>
+        </tr>
+        <tr>
+          <td class="code">3008</td>
+          <td>大立光</td>
+          <td class="num">2645.0</td>
+          <td class="num">2329.75</td>
+          <td class="num pos">+13.53%</td>
+          <td class="num up">▲ 1.2%</td>
+        </tr>
+        <tr>
+          <td class="code">1301</td>
+          <td>台塑</td>
+          <td class="num">51.8</td>
+          <td class="num">45.62</td>
+          <td class="num pos">+13.55%</td>
+          <td class="num up">▲ 1.07%</td>
+        </tr>
+        <tr>
+          <td class="code">3312</td>
+          <td>弘憶股</td>
+          <td class="num">43.1</td>
+          <td class="num">37.91</td>
+          <td class="num pos">+13.68%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">1471</td>
+          <td>首利</td>
+          <td class="num">13.05</td>
+          <td class="num">11.45</td>
+          <td class="num pos">+13.96%</td>
+          <td class="num up">▲ 1.84%</td>
+        </tr>
+        <tr>
+          <td class="code">3605</td>
+          <td>宏致</td>
+          <td class="num">71.6</td>
+          <td class="num">62.81</td>
+          <td class="num pos">+13.99%</td>
+          <td class="num up">▲ 0.74%</td>
+        </tr>
+        <tr>
+          <td class="code">4938</td>
+          <td>和碩</td>
+          <td class="num">84.0</td>
+          <td class="num">73.64</td>
+          <td class="num pos">+14.08%</td>
+          <td class="num up">▲ 0.88%</td>
+        </tr>
+        <tr>
+          <td class="code">2497</td>
+          <td>怡利電</td>
+          <td class="num">55.6</td>
+          <td class="num">48.72</td>
+          <td class="num pos">+14.12%</td>
+          <td class="num up">▲ 1.27%</td>
+        </tr>
+        <tr>
+          <td class="code">2492</td>
+          <td>華新科</td>
+          <td class="num">149.0</td>
+          <td class="num">130.5</td>
+          <td class="num pos">+14.18%</td>
+          <td class="num up">▲ 1.12%</td>
+        </tr>
+        <tr>
+          <td class="code">8162</td>
+          <td>微矽電子-創</td>
+          <td class="num">43.5</td>
+          <td class="num">38.06</td>
+          <td class="num pos">+14.30%</td>
+          <td class="num up">▲ 1.25%</td>
+        </tr>
+        <tr>
+          <td class="code">2478</td>
+          <td>大毅</td>
+          <td class="num">73.9</td>
+          <td class="num">64.57</td>
+          <td class="num pos">+14.46%</td>
+          <td class="num up">▲ 1.12%</td>
+        </tr>
+        <tr>
+          <td class="code">6405</td>
+          <td>悅城</td>
+          <td class="num">35.9</td>
+          <td class="num">31.36</td>
+          <td class="num pos">+14.47%</td>
+          <td class="num up">▲ 1.58%</td>
+        </tr>
+        <tr>
+          <td class="code">2855</td>
+          <td>統一證</td>
+          <td class="num">33.45</td>
+          <td class="num">29.2</td>
+          <td class="num pos">+14.55%</td>
+          <td class="num up">▲ 1.56%</td>
+        </tr>
+        <tr>
+          <td class="code">2330</td>
+          <td>台積電</td>
+          <td class="num">2050.0</td>
+          <td class="num">1789.5</td>
+          <td class="num pos">+14.56%</td>
+          <td class="num up">▲ 1.7%</td>
+        </tr>
+        <tr>
+          <td class="code">3481</td>
+          <td>群創</td>
+          <td class="num">26.0</td>
+          <td class="num">22.67</td>
+          <td class="num pos">+14.70%</td>
+          <td class="num up">▲ 2.63%</td>
+        </tr>
+        <tr>
+          <td class="code">6206</td>
+          <td>飛捷</td>
+          <td class="num">110.5</td>
+          <td class="num">96.23</td>
+          <td class="num pos">+14.83%</td>
+          <td class="num up">▲ 0.83%</td>
+        </tr>
+        <tr>
+          <td class="code">1905</td>
+          <td>華紙</td>
+          <td class="num">14.5</td>
+          <td class="num">12.61</td>
+          <td class="num pos">+14.97%</td>
+          <td class="num up">▲ 0.96%</td>
+        </tr>
+        <tr>
+          <td class="code">6525</td>
+          <td>捷敏-KY</td>
+          <td class="num">92.7</td>
+          <td class="num">80.57</td>
+          <td class="num pos">+15.06%</td>
+          <td class="num up">▲ 1.1%</td>
+        </tr>
+        <tr>
+          <td class="code">1809</td>
+          <td>中釉</td>
+          <td class="num">27.4</td>
+          <td class="num">23.78</td>
+          <td class="num pos">+15.23%</td>
+          <td class="num up">▲ 2.05%</td>
+        </tr>
+        <tr>
+          <td class="code">2395</td>
+          <td>研華</td>
+          <td class="num">364.5</td>
+          <td class="num">316.25</td>
+          <td class="num pos">+15.26%</td>
+          <td class="num up">▲ 1.24%</td>
+        </tr>
+        <tr>
+          <td class="code">6277</td>
+          <td>宏正</td>
+          <td class="num">72.9</td>
+          <td class="num">63.14</td>
+          <td class="num pos">+15.46%</td>
+          <td class="num up">▲ 0.79%</td>
+        </tr>
+        <tr>
+          <td class="code">6805</td>
+          <td>富世達</td>
+          <td class="num">1915.0</td>
+          <td class="num">1658.5</td>
+          <td class="num pos">+15.47%</td>
+          <td class="num up">▲ 1.05%</td>
+        </tr>
+        <tr>
+          <td class="code">3051</td>
+          <td>力特</td>
+          <td class="num">24.85</td>
+          <td class="num">21.46</td>
+          <td class="num pos">+15.78%</td>
+          <td class="num up">▲ 1.54%</td>
+        </tr>
+        <tr>
+          <td class="code">1441</td>
+          <td>大東</td>
+          <td class="num">11.8</td>
+          <td class="num">10.19</td>
+          <td class="num pos">+15.79%</td>
+          <td class="num up">▲ 0.54%</td>
+        </tr>
+        <tr>
+          <td class="code">2451</td>
+          <td>創見</td>
+          <td class="num">265.5</td>
+          <td class="num">229.25</td>
+          <td class="num pos">+15.81%</td>
+          <td class="num up">▲ 1.98%</td>
+        </tr>
+        <tr>
+          <td class="code">2423</td>
+          <td>固緯</td>
+          <td class="num">59.3</td>
+          <td class="num">51.19</td>
+          <td class="num pos">+15.84%</td>
+          <td class="num up">▲ 0.62%</td>
+        </tr>
+        <tr>
+          <td class="code">2885</td>
+          <td>元大金</td>
+          <td class="num">51.0</td>
+          <td class="num">43.99</td>
+          <td class="num pos">+15.93%</td>
+          <td class="num up">▲ 1.53%</td>
+        </tr>
+        <tr>
+          <td class="code">8028</td>
+          <td>昇陽半導體</td>
+          <td class="num">209.5</td>
+          <td class="num">180.47</td>
+          <td class="num pos">+16.08%</td>
+          <td class="num up">▲ 1.42%</td>
+        </tr>
+        <tr>
+          <td class="code">3062</td>
+          <td>建漢</td>
+          <td class="num">30.15</td>
+          <td class="num">25.95</td>
+          <td class="num pos">+16.18%</td>
+          <td class="num up">▲ 1.24%</td>
+        </tr>
+        <tr>
+          <td class="code">2483</td>
+          <td>百容</td>
+          <td class="num">23.6</td>
+          <td class="num">20.31</td>
+          <td class="num pos">+16.20%</td>
+          <td class="num up">▲ 1.25%</td>
+        </tr>
+        <tr>
+          <td class="code">3535</td>
+          <td>晶彩科</td>
+          <td class="num">128.0</td>
+          <td class="num">109.93</td>
+          <td class="num pos">+16.44%</td>
+          <td class="num up">▲ 1.81%</td>
+        </tr>
+        <tr>
+          <td class="code">7769</td>
+          <td>鴻勁</td>
+          <td class="num">4465.0</td>
+          <td class="num">3826.5</td>
+          <td class="num pos">+16.69%</td>
+          <td class="num up">▲ 1.95%</td>
+        </tr>
+        <tr>
+          <td class="code">0050</td>
+          <td>元大台灣50</td>
+          <td class="num">86.0</td>
+          <td class="num">73.67</td>
+          <td class="num pos">+16.73%</td>
+          <td class="num up">▲ 1.66%</td>
+        </tr>
+        <tr>
+          <td class="code">6534</td>
+          <td>正瀚-創</td>
+          <td class="num">100.0</td>
+          <td class="num">85.57</td>
+          <td class="num pos">+16.87%</td>
+          <td class="num up">▲ 1.08%</td>
+        </tr>
+        <tr>
+          <td class="code">3135</td>
+          <td>凌航</td>
+          <td class="num">124.0</td>
+          <td class="num">105.9</td>
+          <td class="num pos">+17.09%</td>
+          <td class="num up">▲ 3.26%</td>
+        </tr>
+        <tr>
+          <td class="code">0052</td>
+          <td>富邦科技</td>
+          <td class="num">49.94</td>
+          <td class="num">42.64</td>
+          <td class="num pos">+17.13%</td>
+          <td class="num up">▲ 1.75%</td>
+        </tr>
+        <tr>
+          <td class="code">4566</td>
+          <td>時碩工業</td>
+          <td class="num">69.2</td>
+          <td class="num">59.06</td>
+          <td class="num pos">+17.17%</td>
+          <td class="num up">▲ 1.48%</td>
+        </tr>
+        <tr>
+          <td class="code">6782</td>
+          <td>視陽</td>
+          <td class="num">219.5</td>
+          <td class="num">187.25</td>
+          <td class="num pos">+17.22%</td>
+          <td class="num up">▲ 1.24%</td>
+        </tr>
+        <tr>
+          <td class="code">0057</td>
+          <td>富邦摩台</td>
+          <td class="num">256.0</td>
+          <td class="num">218.33</td>
+          <td class="num pos">+17.25%</td>
+          <td class="num up">▲ 1.67%</td>
+        </tr>
+        <tr>
+          <td class="code">3588</td>
+          <td>通嘉</td>
+          <td class="num">60.2</td>
+          <td class="num">51.32</td>
+          <td class="num pos">+17.30%</td>
+          <td class="num up">▲ 1.25%</td>
+        </tr>
+        <tr>
+          <td class="code">6526</td>
+          <td>達發</td>
+          <td class="num">555.0</td>
+          <td class="num">472.65</td>
+          <td class="num pos">+17.42%</td>
+          <td class="num up">▲ 1.04%</td>
+        </tr>
+        <tr>
+          <td class="code">4967</td>
+          <td>十銓</td>
+          <td class="num">238.5</td>
+          <td class="num">203.07</td>
+          <td class="num pos">+17.44%</td>
+          <td class="num up">▲ 2.68%</td>
+        </tr>
+        <tr>
+          <td class="code">2382</td>
+          <td>廣達</td>
+          <td class="num">340.0</td>
+          <td class="num">289.32</td>
+          <td class="num pos">+17.51%</td>
+          <td class="num up">▲ 0.74%</td>
+        </tr>
+        <tr>
+          <td class="code">3036</td>
+          <td>文曄</td>
+          <td class="num">217.5</td>
+          <td class="num">185.05</td>
+          <td class="num pos">+17.54%</td>
+          <td class="num up">▲ 1.9%</td>
+        </tr>
+        <tr>
+          <td class="code">2419</td>
+          <td>仲琦</td>
+          <td class="num">34.95</td>
+          <td class="num">29.71</td>
+          <td class="num pos">+17.62%</td>
+          <td class="num up">▲ 1.97%</td>
+        </tr>
+        <tr>
+          <td class="code">3717</td>
+          <td>聯嘉投控</td>
+          <td class="num">22.3</td>
+          <td class="num">18.96</td>
+          <td class="num pos">+17.62%</td>
+          <td class="num up">▲ 1.35%</td>
+        </tr>
+        <tr>
+          <td class="code">1303</td>
+          <td>南亞</td>
+          <td class="num">88.4</td>
+          <td class="num">75.02</td>
+          <td class="num pos">+17.84%</td>
+          <td class="num up">▲ 1.69%</td>
+        </tr>
+        <tr>
+          <td class="code">1590</td>
+          <td>亞德客-KY</td>
+          <td class="num">1265.0</td>
+          <td class="num">1071.6</td>
+          <td class="num pos">+18.05%</td>
+          <td class="num up">▲ 1.66%</td>
+        </tr>
+        <tr>
+          <td class="code">6108</td>
+          <td>競國</td>
+          <td class="num">18.3</td>
+          <td class="num">15.5</td>
+          <td class="num pos">+18.05%</td>
+          <td class="num up">▲ 1.26%</td>
+        </tr>
+        <tr>
+          <td class="code">0051</td>
+          <td>元大中型100</td>
+          <td class="num">124.45</td>
+          <td class="num">105.36</td>
+          <td class="num pos">+18.11%</td>
+          <td class="num up">▲ 1.66%</td>
+        </tr>
+        <tr>
+          <td class="code">3406</td>
+          <td>玉晶光</td>
+          <td class="num">529.0</td>
+          <td class="num">447.77</td>
+          <td class="num pos">+18.14%</td>
+          <td class="num up">▲ 1.02%</td>
+        </tr>
+        <tr>
+          <td class="code">2465</td>
+          <td>麗臺</td>
+          <td class="num">67.6</td>
+          <td class="num">57.21</td>
+          <td class="num pos">+18.16%</td>
+          <td class="num up">▲ 1.06%</td>
+        </tr>
+        <tr>
+          <td class="code">6202</td>
+          <td>盛群</td>
+          <td class="num">57.1</td>
+          <td class="num">48.32</td>
+          <td class="num pos">+18.16%</td>
+          <td class="num up">▲ 2.02%</td>
+        </tr>
+        <tr>
+          <td class="code">6230</td>
+          <td>尼得科超眾</td>
+          <td class="num">163.0</td>
+          <td class="num">137.68</td>
+          <td class="num pos">+18.39%</td>
+          <td class="num up">▲ 1.74%</td>
+        </tr>
+        <tr>
+          <td class="code">2493</td>
+          <td>揚博</td>
+          <td class="num">135.5</td>
+          <td class="num">114.4</td>
+          <td class="num pos">+18.44%</td>
+          <td class="num up">▲ 1.35%</td>
+        </tr>
+        <tr>
+          <td class="code">6438</td>
+          <td>迅得</td>
+          <td class="num">183.5</td>
+          <td class="num">154.78</td>
+          <td class="num pos">+18.56%</td>
+          <td class="num up">▲ 1.54%</td>
+        </tr>
+        <tr>
+          <td class="code">5244</td>
+          <td>弘凱</td>
+          <td class="num">47.15</td>
+          <td class="num">39.71</td>
+          <td class="num pos">+18.74%</td>
+          <td class="num up">▲ 0.64%</td>
+        </tr>
+        <tr>
+          <td class="code">6197</td>
+          <td>佳必琪</td>
+          <td class="num">186.0</td>
+          <td class="num">156.53</td>
+          <td class="num pos">+18.83%</td>
+          <td class="num up">▲ 1.54%</td>
+        </tr>
+        <tr>
+          <td class="code">3380</td>
+          <td>明泰</td>
+          <td class="num">40.6</td>
+          <td class="num">34.16</td>
+          <td class="num pos">+18.85%</td>
+          <td class="num up">▲ 1.43%</td>
+        </tr>
+        <tr>
+          <td class="code">1725</td>
+          <td>元禎</td>
+          <td class="num">34.25</td>
+          <td class="num">28.8</td>
+          <td class="num pos">+18.91%</td>
+          <td class="num up">▲ 1.47%</td>
+        </tr>
+        <tr>
+          <td class="code">5288</td>
+          <td>豐祥-KY</td>
+          <td class="num">172.5</td>
+          <td class="num">145.05</td>
+          <td class="num pos">+18.92%</td>
+          <td class="num up">▲ 1.2%</td>
+        </tr>
+        <tr>
+          <td class="code">6958</td>
+          <td>日盛台駿</td>
+          <td class="num">20.0</td>
+          <td class="num">16.82</td>
+          <td class="num pos">+18.92%</td>
+          <td class="num up">▲ 1.26%</td>
+        </tr>
+        <tr>
+          <td class="code">2376</td>
+          <td>技嘉</td>
+          <td class="num">288.5</td>
+          <td class="num">242.47</td>
+          <td class="num pos">+18.98%</td>
+          <td class="num up">▲ 0.93%</td>
+        </tr>
+        <tr>
+          <td class="code">6706</td>
+          <td>惠特</td>
+          <td class="num">148.5</td>
+          <td class="num">124.72</td>
+          <td class="num pos">+19.06%</td>
+          <td class="num up">▲ 1.63%</td>
+        </tr>
+        <tr>
+          <td class="code">2369</td>
+          <td>菱生</td>
+          <td class="num">32.7</td>
+          <td class="num">27.45</td>
+          <td class="num pos">+19.14%</td>
+          <td class="num up">▲ 1.92%</td>
+        </tr>
+        <tr>
+          <td class="code">2527</td>
+          <td>宏璟</td>
+          <td class="num">36.25</td>
+          <td class="num">30.41</td>
+          <td class="num pos">+19.18%</td>
+          <td class="num up">▲ 1.18%</td>
+        </tr>
+        <tr>
+          <td class="code">2401</td>
+          <td>凌陽</td>
+          <td class="num">25.5</td>
+          <td class="num">21.39</td>
+          <td class="num pos">+19.20%</td>
+          <td class="num up">▲ 1.25%</td>
+        </tr>
+        <tr>
+          <td class="code">2338</td>
+          <td>光罩</td>
+          <td class="num">50.3</td>
+          <td class="num">42.07</td>
+          <td class="num pos">+19.58%</td>
+          <td class="num up">▲ 1.8%</td>
+        </tr>
+        <tr>
+          <td class="code">6834</td>
+          <td>天二科技</td>
+          <td class="num">37.4</td>
+          <td class="num">31.26</td>
+          <td class="num pos">+19.63%</td>
+          <td class="num up">▲ 1.53%</td>
+        </tr>
+        <tr>
+          <td class="code">1560</td>
+          <td>中砂</td>
+          <td class="num">530.0</td>
+          <td class="num">442.88</td>
+          <td class="num pos">+19.67%</td>
+          <td class="num up">▲ 2.17%</td>
+        </tr>
+        <tr>
+          <td class="code">3550</td>
+          <td>聯穎</td>
+          <td class="num">20.85</td>
+          <td class="num">17.42</td>
+          <td class="num pos">+19.72%</td>
+          <td class="num up">▲ 2.35%</td>
+        </tr>
+        <tr>
+          <td class="code">1568</td>
+          <td>倉佑</td>
+          <td class="num">27.95</td>
+          <td class="num">23.31</td>
+          <td class="num pos">+19.92%</td>
+          <td class="num up">▲ 1.38%</td>
+        </tr>
+        <tr>
+          <td class="code">3661</td>
+          <td>世芯-KY</td>
+          <td class="num">3985.0</td>
+          <td class="num">3313.0</td>
+          <td class="num pos">+20.28%</td>
+          <td class="num up">▲ 1.27%</td>
+        </tr>
+        <tr>
+          <td class="code">3419</td>
+          <td>譁裕</td>
+          <td class="num">17.95</td>
+          <td class="num">14.9</td>
+          <td class="num pos">+20.45%</td>
+          <td class="num up">▲ 1.69%</td>
+        </tr>
+        <tr>
+          <td class="code">4952</td>
+          <td>凌通</td>
+          <td class="num">48.65</td>
+          <td class="num">40.37</td>
+          <td class="num pos">+20.52%</td>
+          <td class="num up">▲ 1.6%</td>
+        </tr>
+        <tr>
+          <td class="code">3055</td>
+          <td>蔚華科</td>
+          <td class="num">82.5</td>
+          <td class="num">68.43</td>
+          <td class="num pos">+20.55%</td>
+          <td class="num up">▲ 1.27%</td>
+        </tr>
+        <tr>
+          <td class="code">7711</td>
+          <td>永擎</td>
+          <td class="num">308.0</td>
+          <td class="num">255.47</td>
+          <td class="num pos">+20.56%</td>
+          <td class="num up">▲ 0.9%</td>
+        </tr>
+        <tr>
+          <td class="code">2540</td>
+          <td>愛山林</td>
+          <td class="num">58.7</td>
+          <td class="num">48.65</td>
+          <td class="num pos">+20.65%</td>
+          <td class="num up">▲ 1.31%</td>
+        </tr>
+        <tr>
+          <td class="code">0053</td>
+          <td>元大電子</td>
+          <td class="num">197.85</td>
+          <td class="num">163.73</td>
+          <td class="num pos">+20.84%</td>
+          <td class="num up">▲ 1.96%</td>
+        </tr>
+        <tr>
+          <td class="code">3016</td>
+          <td>嘉晶</td>
+          <td class="num">70.1</td>
+          <td class="num">57.99</td>
+          <td class="num pos">+20.87%</td>
+          <td class="num up">▲ 1.68%</td>
+        </tr>
+        <tr>
+          <td class="code">1528</td>
+          <td>恩德</td>
+          <td class="num">29.0</td>
+          <td class="num">23.99</td>
+          <td class="num pos">+20.88%</td>
+          <td class="num up">▲ 3.01%</td>
+        </tr>
+        <tr>
+          <td class="code">3023</td>
+          <td>信邦</td>
+          <td class="num">282.5</td>
+          <td class="num">233.68</td>
+          <td class="num pos">+20.89%</td>
+          <td class="num up">▲ 1.43%</td>
+        </tr>
+        <tr>
+          <td class="code">8215</td>
+          <td>明基材</td>
+          <td class="num">26.55</td>
+          <td class="num">21.93</td>
+          <td class="num pos">+21.05%</td>
+          <td class="num up">▲ 1.66%</td>
+        </tr>
+        <tr>
+          <td class="code">2393</td>
+          <td>億光</td>
+          <td class="num">73.8</td>
+          <td class="num">60.84</td>
+          <td class="num pos">+21.29%</td>
+          <td class="num up">▲ 1.82%</td>
+        </tr>
+        <tr>
+          <td class="code">2347</td>
+          <td>聯強</td>
+          <td class="num">84.8</td>
+          <td class="num">69.76</td>
+          <td class="num pos">+21.57%</td>
+          <td class="num up">▲ 1.74%</td>
+        </tr>
+        <tr>
+          <td class="code">2327</td>
+          <td>國巨*</td>
+          <td class="num">323.0</td>
+          <td class="num">265.05</td>
+          <td class="num pos">+21.86%</td>
+          <td class="num up">▲ 1.65%</td>
+        </tr>
+        <tr>
+          <td class="code">3024</td>
+          <td>憶聲</td>
+          <td class="num">13.2</td>
+          <td class="num">10.81</td>
+          <td class="num pos">+22.08%</td>
+          <td class="num up">▲ 1.17%</td>
+        </tr>
+        <tr>
+          <td class="code">6944</td>
+          <td>兆聯實業</td>
+          <td class="num">927.0</td>
+          <td class="num">755.3</td>
+          <td class="num pos">+22.73%</td>
+          <td class="num up">▲ 2.58%</td>
+        </tr>
+        <tr>
+          <td class="code">2481</td>
+          <td>強茂</td>
+          <td class="num">110.5</td>
+          <td class="num">89.92</td>
+          <td class="num pos">+22.89%</td>
+          <td class="num up">▲ 1.3%</td>
+        </tr>
+        <tr>
+          <td class="code">3044</td>
+          <td>健鼎</td>
+          <td class="num">444.0</td>
+          <td class="num">361.0</td>
+          <td class="num pos">+22.99%</td>
+          <td class="num up">▲ 2.03%</td>
+        </tr>
+        <tr>
+          <td class="code">6166</td>
+          <td>凌華</td>
+          <td class="num">78.8</td>
+          <td class="num">63.82</td>
+          <td class="num pos">+23.47%</td>
+          <td class="num up">▲ 1.04%</td>
+        </tr>
+        <tr>
+          <td class="code">1727</td>
+          <td>中華化</td>
+          <td class="num">59.0</td>
+          <td class="num">47.74</td>
+          <td class="num pos">+23.58%</td>
+          <td class="num up">▲ 2.34%</td>
+        </tr>
+        <tr>
+          <td class="code">2409</td>
+          <td>友達</td>
+          <td class="num">18.9</td>
+          <td class="num">15.29</td>
+          <td class="num pos">+23.59%</td>
+          <td class="num up">▲ 2.43%</td>
+        </tr>
+        <tr>
+          <td class="code">1326</td>
+          <td>台化</td>
+          <td class="num">50.5</td>
+          <td class="num">40.78</td>
+          <td class="num pos">+23.83%</td>
+          <td class="num up">▲ 2.08%</td>
+        </tr>
+        <tr>
+          <td class="code">4739</td>
+          <td>康普</td>
+          <td class="num">92.4</td>
+          <td class="num">74.6</td>
+          <td class="num pos">+23.86%</td>
+          <td class="num up">▲ 1.65%</td>
+        </tr>
+        <tr>
+          <td class="code">2464</td>
+          <td>盟立</td>
+          <td class="num">86.1</td>
+          <td class="num">69.46</td>
+          <td class="num pos">+23.97%</td>
+          <td class="num up">▲ 1.83%</td>
+        </tr>
+        <tr>
+          <td class="code">6902</td>
+          <td>GOGOLOOK</td>
+          <td class="num">98.5</td>
+          <td class="num">79.33</td>
+          <td class="num pos">+24.16%</td>
+          <td class="num up">▲ 1.12%</td>
+        </tr>
+        <tr>
+          <td class="code">5234</td>
+          <td>達興材料</td>
+          <td class="num">462.0</td>
+          <td class="num">371.39</td>
+          <td class="num pos">+24.40%</td>
+          <td class="num up">▲ 1.88%</td>
+        </tr>
+        <tr>
+          <td class="code">3715</td>
+          <td>定穎投控</td>
+          <td class="num">192.0</td>
+          <td class="num">153.97</td>
+          <td class="num pos">+24.70%</td>
+          <td class="num up">▲ 2.67%</td>
+        </tr>
+        <tr>
+          <td class="code">3138</td>
+          <td>耀登</td>
+          <td class="num">198.0</td>
+          <td class="num">158.65</td>
+          <td class="num pos">+24.80%</td>
+          <td class="num up">▲ 3.62%</td>
+        </tr>
+        <tr>
+          <td class="code">6271</td>
+          <td>同欣電</td>
+          <td class="num">187.5</td>
+          <td class="num">150.2</td>
+          <td class="num pos">+24.83%</td>
+          <td class="num up">▲ 2.18%</td>
+        </tr>
+        <tr>
+          <td class="code">6139</td>
+          <td>亞翔</td>
+          <td class="num">725.0</td>
+          <td class="num">580.15</td>
+          <td class="num pos">+24.97%</td>
+          <td class="num up">▲ 2.28%</td>
+        </tr>
+        <tr>
+          <td class="code">3591</td>
+          <td>艾笛森</td>
+          <td class="num">25.3</td>
+          <td class="num">20.11</td>
+          <td class="num pos">+25.79%</td>
+          <td class="num up">▲ 1.75%</td>
+        </tr>
+        <tr>
+          <td class="code">6153</td>
+          <td>嘉聯益</td>
+          <td class="num">20.65</td>
+          <td class="num">16.41</td>
+          <td class="num pos">+25.86%</td>
+          <td class="num up">▲ 1.3%</td>
+        </tr>
+        <tr>
+          <td class="code">4755</td>
+          <td>三福化</td>
+          <td class="num">166.0</td>
+          <td class="num">131.8</td>
+          <td class="num pos">+25.95%</td>
+          <td class="num up">▲ 2.69%</td>
+        </tr>
+        <tr>
+          <td class="code">7795</td>
+          <td>長廣</td>
+          <td class="num">428.0</td>
+          <td class="num">339.48</td>
+          <td class="num pos">+26.08%</td>
+          <td class="num up">▲ 3.03%</td>
+        </tr>
+        <tr>
+          <td class="code">3338</td>
+          <td>泰碩</td>
+          <td class="num">70.7</td>
+          <td class="num">55.91</td>
+          <td class="num pos">+26.46%</td>
+          <td class="num up">▲ 1.96%</td>
+        </tr>
+        <tr>
+          <td class="code">1449</td>
+          <td>佳和</td>
+          <td class="num">15.1</td>
+          <td class="num">11.94</td>
+          <td class="num pos">+26.47%</td>
+          <td class="num up">▲ 2.09%</td>
+        </tr>
+        <tr>
+          <td class="code">2454</td>
+          <td>聯發科</td>
+          <td class="num">2090.0</td>
+          <td class="num">1652.01</td>
+          <td class="num pos">+26.51%</td>
+          <td class="num up">▲ 2.14%</td>
+        </tr>
+        <tr>
+          <td class="code">8150</td>
+          <td>南茂</td>
+          <td class="num">74.1</td>
+          <td class="num">58.52</td>
+          <td class="num pos">+26.63%</td>
+          <td class="num up">▲ 2.68%</td>
+        </tr>
+        <tr>
+          <td class="code">2923</td>
+          <td>鼎固-KY</td>
+          <td class="num">26.9</td>
+          <td class="num">21.23</td>
+          <td class="num pos">+26.72%</td>
+          <td class="num up">▲ 1.23%</td>
+        </tr>
+        <tr>
+          <td class="code">6168</td>
+          <td>宏齊</td>
+          <td class="num">28.05</td>
+          <td class="num">22.11</td>
+          <td class="num pos">+26.87%</td>
+          <td class="num up">▲ 1.97%</td>
+        </tr>
+        <tr>
+          <td class="code">6933</td>
+          <td>AMAX-KY</td>
+          <td class="num">188.0</td>
+          <td class="num">147.57</td>
+          <td class="num pos">+27.39%</td>
+          <td class="num up">▲ 0.89%</td>
+        </tr>
+        <tr>
+          <td class="code">3092</td>
+          <td>鴻碩</td>
+          <td class="num">34.6</td>
+          <td class="num">27.15</td>
+          <td class="num pos">+27.45%</td>
+          <td class="num up">▲ 3.76%</td>
+        </tr>
+        <tr>
+          <td class="code">5292</td>
+          <td>華懋</td>
+          <td class="num">245.0</td>
+          <td class="num">192.2</td>
+          <td class="num pos">+27.47%</td>
+          <td class="num up">▲ 2.59%</td>
+        </tr>
+        <tr>
+          <td class="code">2303</td>
+          <td>聯電</td>
+          <td class="num">76.2</td>
+          <td class="num">59.69</td>
+          <td class="num pos">+27.66%</td>
+          <td class="num up">▲ 2.34%</td>
+        </tr>
+        <tr>
+          <td class="code">3028</td>
+          <td>增你強</td>
+          <td class="num">61.3</td>
+          <td class="num">47.91</td>
+          <td class="num pos">+27.93%</td>
+          <td class="num up">▲ 2.64%</td>
+        </tr>
+        <tr>
+          <td class="code">4569</td>
+          <td>六方科-KY</td>
+          <td class="num">196.0</td>
+          <td class="num">153.18</td>
+          <td class="num pos">+27.96%</td>
+          <td class="num up">▲ 1.59%</td>
+        </tr>
+        <tr>
+          <td class="code">1309</td>
+          <td>台達化</td>
+          <td class="num">19.1</td>
+          <td class="num">14.87</td>
+          <td class="num pos">+28.47%</td>
+          <td class="num up">▲ 2.39%</td>
+        </tr>
+        <tr>
+          <td class="code">8261</td>
+          <td>富鼎</td>
+          <td class="num">128.0</td>
+          <td class="num">99.21</td>
+          <td class="num pos">+29.02%</td>
+          <td class="num up">▲ 1.96%</td>
+        </tr>
+        <tr>
+          <td class="code">2355</td>
+          <td>敬鵬</td>
+          <td class="num">53.1</td>
+          <td class="num">41.01</td>
+          <td class="num pos">+29.47%</td>
+          <td class="num up">▲ 2.67%</td>
+        </tr>
+        <tr>
+          <td class="code">3209</td>
+          <td>全科</td>
+          <td class="num">48.6</td>
+          <td class="num">37.44</td>
+          <td class="num pos">+29.79%</td>
+          <td class="num up">▲ 2.06%</td>
+        </tr>
+        <tr>
+          <td class="code">5434</td>
+          <td>崇越</td>
+          <td class="num">434.0</td>
+          <td class="num">334.12</td>
+          <td class="num pos">+29.89%</td>
+          <td class="num up">▲ 1.95%</td>
+        </tr>
+        <tr>
+          <td class="code">3049</td>
+          <td>精金</td>
+          <td class="num">13.55</td>
+          <td class="num">10.42</td>
+          <td class="num pos">+30.08%</td>
+          <td class="num up">▲ 3.29%</td>
+        </tr>
+        <tr>
+          <td class="code">7822</td>
+          <td>倍利科</td>
+          <td class="num">1550.0</td>
+          <td class="num">1189.35</td>
+          <td class="num pos">+30.32%</td>
+          <td class="num up">▲ 4.23%</td>
+        </tr>
+        <tr>
+          <td class="code">9136</td>
+          <td>巨騰-DR</td>
+          <td class="num">11.05</td>
+          <td class="num">8.48</td>
+          <td class="num pos">+30.36%</td>
+          <td class="num up">▲ 2.4%</td>
+        </tr>
+        <tr>
+          <td class="code">3701</td>
+          <td>大眾控</td>
+          <td class="num">71.5</td>
+          <td class="num">54.6</td>
+          <td class="num pos">+30.96%</td>
+          <td class="num up">▲ 3.87%</td>
+        </tr>
+        <tr>
+          <td class="code">2367</td>
+          <td>燿華</td>
+          <td class="num">70.3</td>
+          <td class="num">53.61</td>
+          <td class="num pos">+31.13%</td>
+          <td class="num up">▲ 4.49%</td>
+        </tr>
+        <tr>
+          <td class="code">2049</td>
+          <td>上銀</td>
+          <td class="num">301.0</td>
+          <td class="num">229.5</td>
+          <td class="num pos">+31.15%</td>
+          <td class="num up">▲ 2.28%</td>
+        </tr>
+        <tr>
+          <td class="code">2254</td>
+          <td>巨鎧精密-創</td>
+          <td class="num">85.2</td>
+          <td class="num">64.81</td>
+          <td class="num pos">+31.45%</td>
+          <td class="num up">▲ 1.96%</td>
+        </tr>
+        <tr>
+          <td class="code">3504</td>
+          <td>揚明光</td>
+          <td class="num">74.2</td>
+          <td class="num">56.37</td>
+          <td class="num pos">+31.62%</td>
+          <td class="num up">▲ 2.16%</td>
+        </tr>
+        <tr>
+          <td class="code">2495</td>
+          <td>普安</td>
+          <td class="num">44.45</td>
+          <td class="num">33.73</td>
+          <td class="num pos">+31.77%</td>
+          <td class="num up">▲ 2.8%</td>
+        </tr>
+        <tr>
+          <td class="code">6924</td>
+          <td>榮惠-KY創</td>
+          <td class="num">94.9</td>
+          <td class="num">71.99</td>
+          <td class="num pos">+31.82%</td>
+          <td class="num up">▲ 2.7%</td>
+        </tr>
+        <tr>
+          <td class="code">2436</td>
+          <td>偉詮電</td>
+          <td class="num">75.1</td>
+          <td class="num">56.7</td>
+          <td class="num pos">+32.46%</td>
+          <td class="num up">▲ 2.65%</td>
+        </tr>
+        <tr>
+          <td class="code">4906</td>
+          <td>正文</td>
+          <td class="num">40.35</td>
+          <td class="num">30.45</td>
+          <td class="num pos">+32.50%</td>
+          <td class="num up">▲ 2.33%</td>
+        </tr>
+        <tr>
+          <td class="code">6442</td>
+          <td>光聖</td>
+          <td class="num">2340.0</td>
+          <td class="num">1764.5</td>
+          <td class="num pos">+32.62%</td>
+          <td class="num up">▲ 3.38%</td>
+        </tr>
+        <tr>
+          <td class="code">2702</td>
+          <td>華園</td>
+          <td class="num">16.7</td>
+          <td class="num">12.56</td>
+          <td class="num pos">+32.99%</td>
+          <td class="num up">▲ 2.01%</td>
+        </tr>
+        <tr>
+          <td class="code">4540</td>
+          <td>全球傳動</td>
+          <td class="num">59.1</td>
+          <td class="num">44.43</td>
+          <td class="num pos">+33.02%</td>
+          <td class="num up">▲ 2.66%</td>
+        </tr>
+        <tr>
+          <td class="code">2402</td>
+          <td>毅嘉</td>
+          <td class="num">77.1</td>
+          <td class="num">57.9</td>
+          <td class="num pos">+33.15%</td>
+          <td class="num up">▲ 2.24%</td>
+        </tr>
+        <tr>
+          <td class="code">2305</td>
+          <td>全友</td>
+          <td class="num">18.6</td>
+          <td class="num">13.96</td>
+          <td class="num pos">+33.24%</td>
+          <td class="num up">▲ 3.03%</td>
+        </tr>
+        <tr>
+          <td class="code">5284</td>
+          <td>jpp-KY</td>
+          <td class="num">380.0</td>
+          <td class="num">283.95</td>
+          <td class="num pos">+33.83%</td>
+          <td class="num up">▲ 1.0%</td>
+        </tr>
+        <tr>
+          <td class="code">1582</td>
+          <td>信錦</td>
+          <td class="num">106.0</td>
+          <td class="num">79.13</td>
+          <td class="num pos">+33.96%</td>
+          <td class="num up">▲ 2.54%</td>
+        </tr>
+        <tr>
+          <td class="code">1717</td>
+          <td>長興</td>
+          <td class="num">80.8</td>
+          <td class="num">60.14</td>
+          <td class="num pos">+34.35%</td>
+          <td class="num up">▲ 3.52%</td>
+        </tr>
+        <tr>
+          <td class="code">1735</td>
+          <td>日勝化</td>
+          <td class="num">27.75</td>
+          <td class="num">20.62</td>
+          <td class="num pos">+34.59%</td>
+          <td class="num up">▲ 3.29%</td>
+        </tr>
+        <tr>
+          <td class="code">4927</td>
+          <td>泰鼎-KY</td>
+          <td class="num">53.2</td>
+          <td class="num">39.48</td>
+          <td class="num pos">+34.76%</td>
+          <td class="num up">▲ 3.87%</td>
+        </tr>
+        <tr>
+          <td class="code">2388</td>
+          <td>威盛</td>
+          <td class="num">72.8</td>
+          <td class="num">54.01</td>
+          <td class="num pos">+34.78%</td>
+          <td class="num up">▲ 1.98%</td>
+        </tr>
+        <tr>
+          <td class="code">6658</td>
+          <td>聯策</td>
+          <td class="num">83.1</td>
+          <td class="num">61.53</td>
+          <td class="num pos">+35.06%</td>
+          <td class="num up">▲ 2.76%</td>
+        </tr>
+        <tr>
+          <td class="code">6937</td>
+          <td>天虹</td>
+          <td class="num">331.0</td>
+          <td class="num">244.88</td>
+          <td class="num pos">+35.17%</td>
+          <td class="num up">▲ 2.42%</td>
+        </tr>
+        <tr>
+          <td class="code">2231</td>
+          <td>為升</td>
+          <td class="num">135.0</td>
+          <td class="num">99.86</td>
+          <td class="num pos">+35.19%</td>
+          <td class="num up">▲ 1.92%</td>
+        </tr>
+        <tr>
+          <td class="code">2476</td>
+          <td>鉅祥</td>
+          <td class="num">122.0</td>
+          <td class="num">89.84</td>
+          <td class="num pos">+35.80%</td>
+          <td class="num up">▲ 2.02%</td>
+        </tr>
+        <tr>
+          <td class="code">6224</td>
+          <td>聚鼎</td>
+          <td class="num">58.3</td>
+          <td class="num">42.87</td>
+          <td class="num pos">+35.98%</td>
+          <td class="num up">▲ 2.09%</td>
+        </tr>
+        <tr>
+          <td class="code">3532</td>
+          <td>台勝科</td>
+          <td class="num">182.5</td>
+          <td class="num">133.9</td>
+          <td class="num pos">+36.30%</td>
+          <td class="num up">▲ 3.16%</td>
+        </tr>
+        <tr>
+          <td class="code">6196</td>
+          <td>帆宣</td>
+          <td class="num">397.5</td>
+          <td class="num">291.0</td>
+          <td class="num pos">+36.60%</td>
+          <td class="num up">▲ 3.02%</td>
+        </tr>
+        <tr>
+          <td class="code">3450</td>
+          <td>聯鈞</td>
+          <td class="num">380.0</td>
+          <td class="num">276.15</td>
+          <td class="num pos">+37.61%</td>
+          <td class="num up">▲ 2.21%</td>
+        </tr>
+        <tr>
+          <td class="code">5243</td>
+          <td>乙盛-KY</td>
+          <td class="num">119.0</td>
+          <td class="num">86.36</td>
+          <td class="num pos">+37.79%</td>
+          <td class="num up">▲ 2.27%</td>
+        </tr>
+        <tr>
+          <td class="code">2313</td>
+          <td>華通</td>
+          <td class="num">254.5</td>
+          <td class="num">184.11</td>
+          <td class="num pos">+38.24%</td>
+          <td class="num up">▲ 4.86%</td>
+        </tr>
+        <tr>
+          <td class="code">1597</td>
+          <td>直得</td>
+          <td class="num">114.0</td>
+          <td class="num">82.38</td>
+          <td class="num pos">+38.38%</td>
+          <td class="num up">▲ 2.53%</td>
+        </tr>
+        <tr>
+          <td class="code">6257</td>
+          <td>矽格</td>
+          <td class="num">187.0</td>
+          <td class="num">135.14</td>
+          <td class="num pos">+38.38%</td>
+          <td class="num up">▲ 3.67%</td>
+        </tr>
+        <tr>
+          <td class="code">3702</td>
+          <td>大聯大</td>
+          <td class="num">102.5</td>
+          <td class="num">73.43</td>
+          <td class="num pos">+39.60%</td>
+          <td class="num up">▲ 2.56%</td>
+        </tr>
+        <tr>
+          <td class="code">6854</td>
+          <td>錼創科技-KY創</td>
+          <td class="num">190.5</td>
+          <td class="num">136.2</td>
+          <td class="num pos">+39.87%</td>
+          <td class="num up">▲ 2.33%</td>
+        </tr>
+        <tr>
+          <td class="code">8039</td>
+          <td>台虹</td>
+          <td class="num">146.5</td>
+          <td class="num">104.33</td>
+          <td class="num pos">+40.41%</td>
+          <td class="num up">▲ 3.4%</td>
+        </tr>
+        <tr>
+          <td class="code">3518</td>
+          <td>柏騰</td>
+          <td class="num">31.0</td>
+          <td class="num">21.95</td>
+          <td class="num pos">+41.25%</td>
+          <td class="num up">▲ 2.4%</td>
+        </tr>
+        <tr>
+          <td class="code">1721</td>
+          <td>三晃</td>
+          <td class="num">24.8</td>
+          <td class="num">17.54</td>
+          <td class="num pos">+41.41%</td>
+          <td class="num up">▲ 4.0%</td>
+        </tr>
+        <tr>
+          <td class="code">2340</td>
+          <td>台亞</td>
+          <td class="num">39.05</td>
+          <td class="num">27.61</td>
+          <td class="num pos">+41.43%</td>
+          <td class="num up">▲ 2.33%</td>
+        </tr>
+        <tr>
+          <td class="code">2337</td>
+          <td>旺宏</td>
+          <td class="num">132.5</td>
+          <td class="num">93.38</td>
+          <td class="num pos">+41.90%</td>
+          <td class="num up">▲ 5.57%</td>
+        </tr>
+        <tr>
+          <td class="code">3711</td>
+          <td>日月光投控</td>
+          <td class="num">472.0</td>
+          <td class="num">330.07</td>
+          <td class="num pos">+43.00%</td>
+          <td class="num up">▲ 3.79%</td>
+        </tr>
+        <tr>
+          <td class="code">3031</td>
+          <td>佰鴻</td>
+          <td class="num">31.85</td>
+          <td class="num">22.15</td>
+          <td class="num pos">+43.82%</td>
+          <td class="num up">▲ 2.87%</td>
+        </tr>
+        <tr>
+          <td class="code">3017</td>
+          <td>奇鋐</td>
+          <td class="num">2565.0</td>
+          <td class="num">1762.25</td>
+          <td class="num pos">+45.55%</td>
+          <td class="num up">▲ 3.46%</td>
+        </tr>
+        <tr>
+          <td class="code">8438</td>
+          <td>昶昕</td>
+          <td class="num">88.6</td>
+          <td class="num">60.84</td>
+          <td class="num pos">+45.62%</td>
+          <td class="num up">▲ 5.15%</td>
+        </tr>
+        <tr>
+          <td class="code">7730</td>
+          <td>暉盛-創</td>
+          <td class="num">178.0</td>
+          <td class="num">122.22</td>
+          <td class="num pos">+45.64%</td>
+          <td class="num up">▲ 4.02%</td>
+        </tr>
+        <tr>
+          <td class="code">3593</td>
+          <td>力銘</td>
+          <td class="num">19.45</td>
+          <td class="num">13.35</td>
+          <td class="num pos">+45.72%</td>
+          <td class="num up">▲ 2.08%</td>
+        </tr>
+        <tr>
+          <td class="code">6949</td>
+          <td>沛爾生醫-創</td>
+          <td class="num">798.0</td>
+          <td class="num">545.85</td>
+          <td class="num pos">+46.19%</td>
+          <td class="num up">▲ 4.14%</td>
+        </tr>
+        <tr>
+          <td class="code">6226</td>
+          <td>光鼎</td>
+          <td class="num">14.6</td>
+          <td class="num">9.98</td>
+          <td class="num pos">+46.31%</td>
+          <td class="num up">▲ 4.12%</td>
+        </tr>
+        <tr>
+          <td class="code">6909</td>
+          <td>創控</td>
+          <td class="num">65.7</td>
+          <td class="num">44.89</td>
+          <td class="num pos">+46.35%</td>
+          <td class="num up">▲ 3.49%</td>
+        </tr>
+        <tr>
+          <td class="code">3563</td>
+          <td>牧德</td>
+          <td class="num">916.0</td>
+          <td class="num">624.48</td>
+          <td class="num pos">+46.68%</td>
+          <td class="num up">▲ 3.68%</td>
+        </tr>
+        <tr>
+          <td class="code">7721</td>
+          <td>微程式</td>
+          <td class="num">84.1</td>
+          <td class="num">57.18</td>
+          <td class="num pos">+47.08%</td>
+          <td class="num up">▲ 3.27%</td>
+        </tr>
+        <tr>
+          <td class="code">4720</td>
+          <td>德淵</td>
+          <td class="num">25.35</td>
+          <td class="num">17.23</td>
+          <td class="num pos">+47.15%</td>
+          <td class="num up">▲ 3.36%</td>
+        </tr>
+        <tr>
+          <td class="code">2485</td>
+          <td>兆赫</td>
+          <td class="num">72.3</td>
+          <td class="num">49.11</td>
+          <td class="num pos">+47.21%</td>
+          <td class="num up">▲ 5.31%</td>
+        </tr>
+        <tr>
+          <td class="code">3665</td>
+          <td>貿聯-KY</td>
+          <td class="num">2425.0</td>
+          <td class="num">1646.75</td>
+          <td class="num pos">+47.26%</td>
+          <td class="num up">▲ 2.81%</td>
+        </tr>
+        <tr>
+          <td class="code">3443</td>
+          <td>創意</td>
+          <td class="num">3735.0</td>
+          <td class="num">2534.25</td>
+          <td class="num pos">+47.38%</td>
+          <td class="num up">▲ 3.08%</td>
+        </tr>
+        <tr>
+          <td class="code">1802</td>
+          <td>台玻</td>
+          <td class="num">74.2</td>
+          <td class="num">50.3</td>
+          <td class="num pos">+47.51%</td>
+          <td class="num up">▲ 3.9%</td>
+        </tr>
+        <tr>
+          <td class="code">2368</td>
+          <td>金像電</td>
+          <td class="num">1225.0</td>
+          <td class="num">824.5</td>
+          <td class="num pos">+48.57%</td>
+          <td class="num up">▲ 3.97%</td>
+        </tr>
+        <tr>
+          <td class="code">8996</td>
+          <td>高力</td>
+          <td class="num">1215.0</td>
+          <td class="num">807.85</td>
+          <td class="num pos">+50.40%</td>
+          <td class="num up">▲ 4.45%</td>
+        </tr>
+        <tr>
+          <td class="code">6415</td>
+          <td>矽力*-KY</td>
+          <td class="num">394.0</td>
+          <td class="num">261.79</td>
+          <td class="num pos">+50.50%</td>
+          <td class="num up">▲ 3.78%</td>
+        </tr>
+        <tr>
+          <td class="code">2399</td>
+          <td>映泰</td>
+          <td class="num">41.95</td>
+          <td class="num">27.75</td>
+          <td class="num pos">+51.16%</td>
+          <td class="num up">▲ 3.14%</td>
+        </tr>
+        <tr>
+          <td class="code">2460</td>
+          <td>建通</td>
+          <td class="num">38.45</td>
+          <td class="num">25.4</td>
+          <td class="num pos">+51.39%</td>
+          <td class="num up">▲ 4.14%</td>
+        </tr>
+        <tr>
+          <td class="code">3030</td>
+          <td>德律</td>
+          <td class="num">341.0</td>
+          <td class="num">224.88</td>
+          <td class="num pos">+51.64%</td>
+          <td class="num up">▲ 4.01%</td>
+        </tr>
+        <tr>
+          <td class="code">6531</td>
+          <td>愛普*</td>
+          <td class="num">720.0</td>
+          <td class="num">474.23</td>
+          <td class="num pos">+51.83%</td>
+          <td class="num up">▲ 3.53%</td>
+        </tr>
+        <tr>
+          <td class="code">2472</td>
+          <td>立隆電</td>
+          <td class="num">188.0</td>
+          <td class="num">123.62</td>
+          <td class="num pos">+52.07%</td>
+          <td class="num up">▲ 3.54%</td>
+        </tr>
+        <tr>
+          <td class="code">2486</td>
+          <td>一詮</td>
+          <td class="num">204.5</td>
+          <td class="num">134.26</td>
+          <td class="num pos">+52.32%</td>
+          <td class="num up">▲ 4.17%</td>
+        </tr>
+        <tr>
+          <td class="code">2345</td>
+          <td>智邦</td>
+          <td class="num">2190.0</td>
+          <td class="num">1437.5</td>
+          <td class="num pos">+52.35%</td>
+          <td class="num up">▲ 4.36%</td>
+        </tr>
+        <tr>
+          <td class="code">3533</td>
+          <td>嘉澤</td>
+          <td class="num">2635.0</td>
+          <td class="num">1729.5</td>
+          <td class="num pos">+52.36%</td>
+          <td class="num up">▲ 4.11%</td>
+        </tr>
+        <tr>
+          <td class="code">6285</td>
+          <td>啟碁</td>
+          <td class="num">249.5</td>
+          <td class="num">163.72</td>
+          <td class="num pos">+52.39%</td>
+          <td class="num up">▲ 4.72%</td>
+        </tr>
+        <tr>
+          <td class="code">4576</td>
+          <td>大銀微系統</td>
+          <td class="num">194.0</td>
+          <td class="num">126.45</td>
+          <td class="num pos">+53.42%</td>
+          <td class="num up">▲ 3.56%</td>
+        </tr>
+        <tr>
+          <td class="code">6278</td>
+          <td>台表科</td>
+          <td class="num">158.5</td>
+          <td class="num">103.25</td>
+          <td class="num pos">+53.51%</td>
+          <td class="num up">▲ 2.81%</td>
+        </tr>
+        <tr>
+          <td class="code">2308</td>
+          <td>台達電</td>
+          <td class="num">2015.0</td>
+          <td class="num">1312.0</td>
+          <td class="num pos">+53.58%</td>
+          <td class="num up">▲ 4.11%</td>
+        </tr>
+        <tr>
+          <td class="code">3437</td>
+          <td>榮創</td>
+          <td class="num">27.65</td>
+          <td class="num">17.96</td>
+          <td class="num pos">+54.00%</td>
+          <td class="num up">▲ 3.92%</td>
+        </tr>
+        <tr>
+          <td class="code">2489</td>
+          <td>瑞軒</td>
+          <td class="num">44.5</td>
+          <td class="num">28.77</td>
+          <td class="num pos">+54.68%</td>
+          <td class="num up">▲ 5.41%</td>
+        </tr>
+        <tr>
+          <td class="code">6456</td>
+          <td>GIS-KY</td>
+          <td class="num">79.9</td>
+          <td class="num">51.56</td>
+          <td class="num pos">+54.96%</td>
+          <td class="num up">▲ 3.79%</td>
+        </tr>
+        <tr>
+          <td class="code">4977</td>
+          <td>眾達-KY</td>
+          <td class="num">252.0</td>
+          <td class="num">161.95</td>
+          <td class="num pos">+55.60%</td>
+          <td class="num up">▲ 4.13%</td>
+        </tr>
+        <tr>
+          <td class="code">3673</td>
+          <td>TPK-KY</td>
+          <td class="num">69.8</td>
+          <td class="num">44.84</td>
+          <td class="num pos">+55.66%</td>
+          <td class="num up">▲ 3.13%</td>
+        </tr>
+        <tr>
+          <td class="code">2243</td>
+          <td>宏旭-KY</td>
+          <td class="num">23.2</td>
+          <td class="num">14.86</td>
+          <td class="num pos">+56.15%</td>
+          <td class="num up">▲ 4.28%</td>
+        </tr>
+        <tr>
+          <td class="code">3229</td>
+          <td>晟鈦</td>
+          <td class="num">37.1</td>
+          <td class="num">23.51</td>
+          <td class="num pos">+57.79%</td>
+          <td class="num up">▲ 4.06%</td>
+        </tr>
+        <tr>
+          <td class="code">6789</td>
+          <td>采鈺</td>
+          <td class="num">504.0</td>
+          <td class="num">317.98</td>
+          <td class="num pos">+58.50%</td>
+          <td class="num up">▲ 3.85%</td>
+        </tr>
+        <tr>
+          <td class="code">8271</td>
+          <td>宇瞻</td>
+          <td class="num">216.5</td>
+          <td class="num">135.03</td>
+          <td class="num pos">+60.34%</td>
+          <td class="num up">▲ 4.67%</td>
+        </tr>
+        <tr>
+          <td class="code">2360</td>
+          <td>致茂</td>
+          <td class="num">2025.0</td>
+          <td class="num">1260.0</td>
+          <td class="num pos">+60.71%</td>
+          <td class="num up">▲ 5.13%</td>
+        </tr>
+        <tr>
+          <td class="code">3645</td>
+          <td>達邁</td>
+          <td class="num">109.5</td>
+          <td class="num">68.02</td>
+          <td class="num pos">+60.98%</td>
+          <td class="num up">▲ 4.37%</td>
+        </tr>
+        <tr>
+          <td class="code">6205</td>
+          <td>詮欣</td>
+          <td class="num">89.1</td>
+          <td class="num">55.3</td>
+          <td class="num pos">+61.11%</td>
+          <td class="num up">▲ 4.82%</td>
+        </tr>
+        <tr>
+          <td class="code">3653</td>
+          <td>健策</td>
+          <td class="num">5370.0</td>
+          <td class="num">3319.25</td>
+          <td class="num pos">+61.78%</td>
+          <td class="num up">▲ 3.61%</td>
+        </tr>
+        <tr>
+          <td class="code">4958</td>
+          <td>臻鼎-KY</td>
+          <td class="num">315.0</td>
+          <td class="num">193.85</td>
+          <td class="num pos">+62.50%</td>
+          <td class="num up">▲ 4.52%</td>
+        </tr>
+        <tr>
+          <td class="code">2351</td>
+          <td>順德</td>
+          <td class="num">151.0</td>
+          <td class="num">92.22</td>
+          <td class="num pos">+63.73%</td>
+          <td class="num up">▲ 4.09%</td>
+        </tr>
+        <tr>
+          <td class="code">3054</td>
+          <td>立萬利</td>
+          <td class="num">75.0</td>
+          <td class="num">45.78</td>
+          <td class="num pos">+63.84%</td>
+          <td class="num up">▲ 5.95%</td>
+        </tr>
+        <tr>
+          <td class="code">6831</td>
+          <td>邁科</td>
+          <td class="num">516.0</td>
+          <td class="num">314.47</td>
+          <td class="num pos">+64.09%</td>
+          <td class="num up">▲ 4.69%</td>
+        </tr>
+        <tr>
+          <td class="code">2455</td>
+          <td>全新</td>
+          <td class="num">340.0</td>
+          <td class="num">207.07</td>
+          <td class="num pos">+64.19%</td>
+          <td class="num up">▲ 5.17%</td>
+        </tr>
+        <tr>
+          <td class="code">2467</td>
+          <td>志聖</td>
+          <td class="num">560.0</td>
+          <td class="num">334.1</td>
+          <td class="num pos">+67.61%</td>
+          <td class="num up">▲ 5.59%</td>
+        </tr>
+        <tr>
+          <td class="code">7750</td>
+          <td>新代</td>
+          <td class="num">1940.0</td>
+          <td class="num">1156.5</td>
+          <td class="num pos">+67.75%</td>
+          <td class="num up">▲ 5.46%</td>
+        </tr>
+        <tr>
+          <td class="code">4949</td>
+          <td>有成精密</td>
+          <td class="num">89.5</td>
+          <td class="num">53.0</td>
+          <td class="num pos">+68.86%</td>
+          <td class="num up">▲ 5.13%</td>
+        </tr>
+        <tr>
+          <td class="code">8021</td>
+          <td>尖點</td>
+          <td class="num">405.0</td>
+          <td class="num">239.3</td>
+          <td class="num pos">+69.24%</td>
+          <td class="num up">▲ 5.98%</td>
+        </tr>
+        <tr>
+          <td class="code">2383</td>
+          <td>台光電</td>
+          <td class="num">3950.0</td>
+          <td class="num">2330.75</td>
+          <td class="num pos">+69.47%</td>
+          <td class="num up">▲ 5.56%</td>
+        </tr>
+        <tr>
+          <td class="code">4989</td>
+          <td>榮科</td>
+          <td class="num">106.5</td>
+          <td class="num">62.74</td>
+          <td class="num pos">+69.74%</td>
+          <td class="num up">▲ 5.53%</td>
+        </tr>
+        <tr>
+          <td class="code">6672</td>
+          <td>騰輝電子-KY</td>
+          <td class="num">187.5</td>
+          <td class="num">109.32</td>
+          <td class="num pos">+71.52%</td>
+          <td class="num up">▲ 4.92%</td>
+        </tr>
+        <tr>
+          <td class="code">3714</td>
+          <td>富采</td>
+          <td class="num">73.6</td>
+          <td class="num">42.82</td>
+          <td class="num pos">+71.88%</td>
+          <td class="num up">▲ 5.08%</td>
+        </tr>
+        <tr>
+          <td class="code">3042</td>
+          <td>晶技</td>
+          <td class="num">166.5</td>
+          <td class="num">96.24</td>
+          <td class="num pos">+73.00%</td>
+          <td class="num up">▲ 4.47%</td>
+        </tr>
+        <tr>
+          <td class="code">3037</td>
+          <td>欣興</td>
+          <td class="num">710.0</td>
+          <td class="num">408.25</td>
+          <td class="num pos">+73.91%</td>
+          <td class="num up">▲ 6.45%</td>
+        </tr>
+        <tr>
+          <td class="code">2484</td>
+          <td>希華</td>
+          <td class="num">49.25</td>
+          <td class="num">28.23</td>
+          <td class="num pos">+74.46%</td>
+          <td class="num up">▲ 5.36%</td>
+        </tr>
+        <tr>
+          <td class="code">3189</td>
+          <td>景碩</td>
+          <td class="num">473.5</td>
+          <td class="num">271.32</td>
+          <td class="num pos">+74.52%</td>
+          <td class="num up">▲ 6.19%</td>
+        </tr>
+        <tr>
+          <td class="code">6426</td>
+          <td>統新</td>
+          <td class="num">252.0</td>
+          <td class="num">142.92</td>
+          <td class="num pos">+76.32%</td>
+          <td class="num up">▲ 6.5%</td>
+        </tr>
+        <tr>
+          <td class="code">8046</td>
+          <td>南電</td>
+          <td class="num">789.0</td>
+          <td class="num">444.77</td>
+          <td class="num pos">+77.39%</td>
+          <td class="num up">▲ 6.2%</td>
+        </tr>
+        <tr>
+          <td class="code">4764</td>
+          <td>雙鍵</td>
+          <td class="num">244.5</td>
+          <td class="num">135.18</td>
+          <td class="num pos">+80.88%</td>
+          <td class="num up">▲ 6.66%</td>
+        </tr>
+        <tr>
+          <td class="code">3583</td>
+          <td>辛耘</td>
+          <td class="num">770.0</td>
+          <td class="num">415.77</td>
+          <td class="num pos">+85.20%</td>
+          <td class="num up">▲ 5.84%</td>
+        </tr>
+        <tr>
+          <td class="code">4956</td>
+          <td>光鋐</td>
+          <td class="num">53.2</td>
+          <td class="num">28.37</td>
+          <td class="num pos">+87.52%</td>
+          <td class="num up">▲ 6.15%</td>
+        </tr>
+        <tr>
+          <td class="code">1711</td>
+          <td>永光</td>
+          <td class="num">54.2</td>
+          <td class="num">28.89</td>
+          <td class="num pos">+87.61%</td>
+          <td class="num up">▲ 6.66%</td>
+        </tr>
+        <tr>
+          <td class="code">3167</td>
+          <td>大量</td>
+          <td class="num">626.0</td>
+          <td class="num">333.45</td>
+          <td class="num pos">+87.73%</td>
+          <td class="num up">▲ 6.47%</td>
+        </tr>
+        <tr>
+          <td class="code">6861</td>
+          <td>睿生光電</td>
+          <td class="num">195.0</td>
+          <td class="num">103.79</td>
+          <td class="num pos">+87.88%</td>
+          <td class="num up">▲ 6.98%</td>
+        </tr>
+        <tr>
+          <td class="code">4919</td>
+          <td>新唐</td>
+          <td class="num">144.5</td>
+          <td class="num">76.02</td>
+          <td class="num pos">+90.09%</td>
+          <td class="num up">▲ 6.44%</td>
+        </tr>
+        <tr>
+          <td class="code">6213</td>
+          <td>聯茂</td>
+          <td class="num">286.0</td>
+          <td class="num">145.75</td>
+          <td class="num pos">+96.23%</td>
+          <td class="num up">▲ 6.48%</td>
+        </tr>
+        <tr>
+          <td class="code">6515</td>
+          <td>穎崴</td>
+          <td class="num">10715.0</td>
+          <td class="num">5431.0</td>
+          <td class="num pos">+97.29%</td>
+          <td class="num up">▲ 8.12%</td>
+        </tr>
+        <tr>
+          <td class="code">3026</td>
+          <td>禾伸堂</td>
+          <td class="num">255.0</td>
+          <td class="num">128.6</td>
+          <td class="num pos">+98.29%</td>
+          <td class="num up">▲ 6.26%</td>
+        </tr>
+        <tr>
+          <td class="code">2426</td>
+          <td>鼎元</td>
+          <td class="num">53.4</td>
+          <td class="num">26.86</td>
+          <td class="num pos">+98.81%</td>
+          <td class="num up">▲ 7.31%</td>
+        </tr>
+        <tr>
+          <td class="code">6451</td>
+          <td>訊芯-KY</td>
+          <td class="num">474.0</td>
+          <td class="num">237.07</td>
+          <td class="num pos">+99.94%</td>
+          <td class="num up">▲ 7.16%</td>
+        </tr>
+        <tr>
+          <td class="code">6715</td>
+          <td>嘉基</td>
+          <td class="num">448.0</td>
+          <td class="num">214.71</td>
+          <td class="num pos">+108.65%</td>
+          <td class="num up">▲ 9.07%</td>
+        </tr>
+        <tr>
+          <td class="code">6141</td>
+          <td>柏承</td>
+          <td class="num">34.95</td>
+          <td class="num">16.59</td>
+          <td class="num pos">+110.64%</td>
+          <td class="num up">▲ 7.76%</td>
+        </tr>
+        <tr>
+          <td class="code">4960</td>
+          <td>誠美材</td>
+          <td class="num">40.9</td>
+          <td class="num">18.67</td>
+          <td class="num pos">+119.07%</td>
+          <td class="num up">▲ 7.9%</td>
+        </tr>
+        <tr>
+          <td class="code">7610</td>
+          <td>聯友金屬-創</td>
+          <td class="num">628.0</td>
+          <td class="num">281.62</td>
+          <td class="num pos">+122.99%</td>
+          <td class="num up">▲ 10.3%</td>
+        </tr>
+        <tr>
+          <td class="code">6830</td>
+          <td>汎銓</td>
+          <td class="num">876.0</td>
+          <td class="num">349.55</td>
+          <td class="num pos">+150.60%</td>
+          <td class="num up">▲ 11.26%</td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  資料來源：<strong>Yahoo Finance</strong> 週K線資料（自動調整還原權值）、台灣證券交易所（TWSE）上市股票清單<br>
+  注意：資料僅供參考，不構成投資建議。
+</footer>
+
+<script>
+  // 排序
+  let sortDir = {};
+  function sortTable(col) {
+    const tb  = document.querySelector("#mainTable tbody");
+    const rows = Array.from(tb.querySelectorAll("tr:not(.hidden-row)"));
+    const dir  = (sortDir[col] = !sortDir[col]);
+    rows.sort((a, b) => {
+      let av = a.cells[col].innerText.replace(/[▲%+,]/g,"").trim();
+      let bv = b.cells[col].innerText.replace(/[▲%+,]/g,"").trim();
+      let an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) return dir ? an - bn : bn - an;
+      return dir ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(r => tb.appendChild(r));
+  }
+
+  // 搜尋
+  function filterTable() {
+    const q = document.getElementById("search").value.toLowerCase();
+    document.querySelectorAll("#mainTable tbody tr").forEach(row => {
+      const txt = row.innerText.toLowerCase();
+      row.style.display = txt.includes(q) ? "" : "none";
+    });
+  }
+</script>
+</body>
+</html>
