@@ -149,7 +149,7 @@ def scan_stocks(stocks, batch_size=150):
                     vol_bars.append({
                         "time":  t,
                         "value": int(row["volume"]) if not pd.isna(row["volume"]) else 0,
-                        "color": "#34d399" if float(row["close"]) >= float(row["open"]) else "#f87171",
+                        "color": "#f87171" if float(row["close"]) >= float(row["open"]) else "#34d399",
                     })
                     if not pd.isna(row["ma20"]):
                         ma_line.append( {"time": t, "value": round(float(row["ma20"]),  2)})
@@ -517,12 +517,12 @@ function openChart(code, name) {{
   );
 
   const candleSeries = mainChart.addCandlestickSeries({{
-    upColor:        "#34d399",
-    downColor:      "#f87171",
-    borderUpColor:  "#34d399",
-    borderDownColor:"#f87171",
-    wickUpColor:    "#34d399",
-    wickDownColor:  "#f87171",
+    upColor:        "#f87171",
+    downColor:      "#34d399",
+    borderUpColor:  "#f87171",
+    borderDownColor:"#34d399",
+    wickUpColor:    "#f87171",
+    wickDownColor:  "#34d399",
   }});
   candleSeries.setData(data.candles);
 
