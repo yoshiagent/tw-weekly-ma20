@@ -1,0 +1,36 @@
+name: 每週台股 MA20 掃描更新
+
+on:
+  schedule:
+    # 每週日 UTC 22:00 = 台灣時間 週一 06:00（週末收盤後更新）
+    - cron: '0 22 * * 0'
+  workflow_dispatch:   # 允許手動觸發
+
+jobs:
+  scan-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scan
+        run: python scan.py
+
+      - name: Commit & push updated index.html
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "auto: 更新台股 MA20 掃描結果 $(date -u +'%Y-%m-%d')"
+          git push
