@@ -6,7 +6,6 @@
   <title>台股週K MA20 回測清單｜正乖離修正</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: #080e18;
       color: #e2e8f0;
@@ -14,155 +13,64 @@
       line-height: 1.7;
       padding: 32px 20px;
     }
-
-    h1 {
-      font-size: 1.6rem;
-      color: #3b82f6;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-bottom: 24px;
-    }
-
-    .stats {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
+    h1 { font-size: 1.6rem; color: #3b82f6; margin-bottom: 6px; }
+    .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px; }
+    .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
     .stat-card {
-      background: #131f2e;
-      border: 1px solid #2d3f55;
-      border-radius: 10px;
-      padding: 14px 22px;
-      min-width: 140px;
+      background: #131f2e; border: 1px solid #2d3f55;
+      border-radius: 10px; padding: 14px 22px; min-width: 140px;
     }
-
-    .stat-label {
-      font-size: 0.78rem;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #3b82f6;
-    }
-
+    .stat-label { font-size: 0.78rem; color: #94a3b8; margin-bottom: 4px; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
     .callout {
-      background: #0f2040;
-      border: 1px solid rgba(59,130,246,0.3);
-      border-radius: 8px;
-      color: #93c5fd;
-      font-size: 0.85rem;
-      padding: 14px 18px;
-      margin-bottom: 24px;
-      line-height: 1.8;
+      background: #0f2040; border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 8px; color: #93c5fd; font-size: 0.85rem;
+      padding: 14px 18px; margin-bottom: 24px; line-height: 1.8;
     }
-
     .callout strong { color: #60a5fa; }
-
-    .params {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-
+    .params { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
     .param-tag {
-      background: #0f2040;
-      border: 1px solid rgba(59,130,246,0.25);
-      border-radius: 20px;
-      color: #7dd3fc;
-      font-size: 0.78rem;
-      padding: 4px 12px;
+      background: #0f2040; border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 20px; color: #7dd3fc; font-size: 0.78rem; padding: 4px 12px;
     }
-
-    .search-bar {
-      margin-bottom: 16px;
-    }
+    .search-bar { margin-bottom: 16px; }
     .search-bar input {
-      background: #131f2e;
-      border: 1px solid #2d3f55;
-      border-radius: 6px;
-      color: #e2e8f0;
-      font-size: 0.9rem;
-      padding: 8px 14px;
-      width: 280px;
-      outline: none;
+      background: #131f2e; border: 1px solid #2d3f55; border-radius: 6px;
+      color: #e2e8f0; font-size: 0.9rem; padding: 8px 14px; width: 280px; outline: none;
     }
     .search-bar input:focus { border-color: #3b82f6; }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 10px;
-      border: 1px solid #2d3f55;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #2d3f55; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     thead tr { background: #0f2040; }
-
     th {
-      padding: 12px 16px;
-      text-align: left;
-      color: #93c5fd;
-      font-weight: 600;
-      font-size: 0.82rem;
-      white-space: nowrap;
-      cursor: pointer;
-      user-select: none;
+      padding: 12px 16px; text-align: left; color: #93c5fd;
+      font-weight: 600; font-size: 0.82rem; white-space: nowrap;
+      cursor: pointer; user-select: none;
     }
     th:hover { color: #3b82f6; }
-
-    tbody tr {
-      border-top: 1px solid #1a2d42;
-      transition: background 0.15s;
-    }
+    tbody tr { border-top: 1px solid #1a2d42; transition: background 0.15s; }
     tbody tr:hover { background: #131f2e; }
-
-    td {
-      padding: 10px 16px;
-      white-space: nowrap;
-    }
-
+    td { padding: 10px 16px; white-space: nowrap; }
     .code a {
-      color: #fb923c;
-      font-weight: 600;
-      font-family: monospace;
-      font-size: 0.95rem;
-      text-decoration: none;
+      color: #fb923c; font-weight: 600; font-family: monospace;
+      font-size: 0.95rem; text-decoration: none;
     }
     .code a:hover { color: #fdba74; text-decoration: underline; }
-
     .num       { text-align: right; }
     .pos-green { color: #34d399; }
     .neg-red   { color: #f87171; }
     .peak      { color: #fb923c; }
     .up        { color: #3b82f6; }
-
     footer {
-      margin-top: 36px;
-      padding-top: 16px;
-      border-top: 1px solid #2d3f55;
-      font-size: 0.78rem;
-      color: #94a3b8;
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid #2d3f55; font-size: 0.78rem; color: #94a3b8;
     }
   </style>
 </head>
 <body>
 
 <h1>台股週K MA20 ｜正乖離修正回測清單</h1>
-<p class="subtitle">掃描時間：2026-04-21 19:53　｜　資料來源：Yahoo Finance 週K線（還原權值）</p>
+<p class="subtitle">掃描時間：2026-04-21 12:03　｜　資料來源：Yahoo Finance 週K線（還原權值）</p>
 
 <div class="stats">
   <div class="stat-card">
@@ -186,7 +94,7 @@
 </div>
 
 <div class="callout">
-  📌 <strong>篩選邏輯說明</strong><br>
+  <strong>篩選邏輯說明</strong><br>
   ① <strong>週 MA20 向上（Moving Average 20-week）</strong>：當前 MA20 高於 4 週前的 MA20，確認均線處於上升趨勢<br>
   ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 16 週內，收盤價曾超越 MA20 達 <strong>+15% 以上</strong>，代表曾過熱<br>
   ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>-3% 至 +5%</strong>，股價已回落至均線支撐區
@@ -200,7 +108,7 @@
 </div>
 
 <div class="search-bar">
-  <input type="text" id="search" placeholder="搜尋代碼或名稱…" oninput="filterTable()">
+  <input type="text" id="search" placeholder="搜尋代碼或名稱..." oninput="filterTable()">
 </div>
 
 <div class="table-wrap">
@@ -763,7 +671,6 @@
     });
     rows.forEach(r => tb.appendChild(r));
   }
-
   function filterTable() {
     const q = document.getElementById("search").value.toLowerCase();
     document.querySelectorAll("#mainTable tbody tr").forEach(row => {
