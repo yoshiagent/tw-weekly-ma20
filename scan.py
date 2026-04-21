@@ -361,9 +361,13 @@ def gen_html(results, scan_time):
 <body>
 
 <h1>台股週K MA20 ｜正乖離修正回測清單</h1>
-<p class="subtitle">掃描時間：{scan_time}　｜　資料來源：Yahoo Finance 週K線（還原權值）　｜　點擊列查看週K圖表</p>
+<p class="subtitle">資料來源：Yahoo Finance 週K線（還原權值）　｜　點擊列查看週K圖表</p>
 
 <div class="stats">
+  <div class="stat-card" style="border-color: rgba(59,130,246,0.5);">
+    <div class="stat-label">最後更新</div>
+    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">{scan_time}</div>
+  </div>
   <div class="stat-card">
     <div class="stat-label">符合條件股票</div>
     <div class="stat-value">{len(results)}</div>
