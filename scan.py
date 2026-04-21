@@ -1,10 +1,11 @@
 """
-台股週K線過濾工具 v2
+台股週K線過濾工具 v3
 條件：
-  1. 週 MA20 向上（近期 MA20 斜率為正）
-  2. 過去 N 週內曾有大正乖離（股價顯著高於 MA20）
-  3. 目前股價已修正到 MA20 附近（乖離率很小）
+  1. 週 MA20 向上
+  2. 過去 N 週內曾有大正乖離
+  3. 目前股價已修正到 MA20 附近
 
+圖表：週K線 + 布林通道（Bollinger Bands）+ 成交量
 資料來源：TWSE 上市股票清單 + Yahoo Finance 週K線
 """
 
@@ -13,16 +14,19 @@ import pandas as pd
 import requests
 import sys
 import os
+import json
 from datetime import datetime
 
 # ── 參數設定 ──────────────────────────────────────────────────────────────────
 LOOKBACK_WEEKS    = 16    # 往回看幾週判斷「曾有大正乖離」
-BIG_DEV_THRESHOLD = 0.15  # 大正乖離門檻：收盤/MA20 超過此值算「乖離過大」(15%)
-NEAR_MA20_MAX     = 0.05  # 修正後接近 MA20：乖離率絕對值 <= 5%
-NEAR_MA20_MIN     = -0.03 # 下限（允許略低於 MA20 但不能太深）
-MA20_SLOPE_WEEKS  = 4     # 用幾週前的 MA20 計算斜率（向上判斷）
+BIG_DEV_THRESHOLD = 0.15  # 大正乖離門檻 (15%)
+NEAR_MA20_MAX     = 0.05  # 目前乖離上限 +5%
+NEAR_MA20_MIN     = -0.03 # 目前乖離下限 -3%
+MA20_SLOPE_WEEKS  = 4     # MA20 斜率計算週數
+CHART_WEEKS       = 60    # 圖表顯示週數
+BB_STD            = 2     # 布林通道標準差倍數
 
-# ── 1. 取得台股上市清單（TWSE OpenAPI）────────────────────────────────────────
+# ── 1. 取得台股上市清單 ───────────────────────────────────────────────────────
 def get_twse_stock_list():
     print("取得台股上市清單...", flush=True)
     url = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
@@ -41,7 +45,15 @@ def get_twse_stock_list():
         print(f"   無法取得清單：{e}", flush=True)
         return []
 
-# ── 2. 批次下載週K線並套用篩選條件 ───────────────────────────────────────────
+# ── 2. 計算布林通道 ───────────────────────────────────────────────────────────
+def calc_bollinger(close_series, window=20, std_mult=2):
+    ma   = close_series.rolling(window).mean()
+    std  = close_series.rolling(window).std(ddof=0)
+    upper = ma + std_mult * std
+    lower = ma - std_mult * std
+    return ma, upper, lower
+
+# ── 3. 批次下載週K線並套用篩選條件 ───────────────────────────────────────────
 def scan_stocks(stocks, batch_size=150):
     results = []
     total = len(stocks)
@@ -70,15 +82,18 @@ def scan_stocks(stocks, batch_size=150):
 
         for ticker in tickers:
             try:
-                if len(tickers) == 1:
-                    close = raw["Close"]
-                else:
-                    close = raw[ticker]["Close"]
+                single = len(tickers) == 1
+                close  = raw["Close"]          if single else raw[ticker]["Close"]
+                open_  = raw["Open"]           if single else raw[ticker]["Open"]
+                high   = raw["High"]           if single else raw[ticker]["High"]
+                low    = raw["Low"]            if single else raw[ticker]["Low"]
+                volume = raw["Volume"]         if single else raw[ticker]["Volume"]
 
-                close = close.dropna()
+                close  = close.dropna()
                 if len(close) < 25:
                     continue
 
+                # 篩選邏輯
                 ma20 = close.rolling(20).mean()
                 ma20_clean = ma20.dropna()
                 if len(ma20_clean) < MA20_SLOPE_WEEKS + 2:
@@ -88,11 +103,9 @@ def scan_stocks(stocks, batch_size=150):
                 last_ma20  = float(ma20_clean.iloc[-1])
                 old_ma20   = float(ma20_clean.iloc[-1 - MA20_SLOPE_WEEKS])
 
-                # 條件 1：MA20 向上
                 if not (last_ma20 > old_ma20):
                     continue
 
-                # 條件 2：過去 LOOKBACK_WEEKS 週內曾有大正乖離
                 recent_close = close.iloc[-LOOKBACK_WEEKS:]
                 recent_ma20  = ma20.iloc[-LOOKBACK_WEEKS:]
                 dev_series   = (recent_close - recent_ma20) / recent_ma20
@@ -100,14 +113,48 @@ def scan_stocks(stocks, batch_size=150):
                 if max_dev < BIG_DEV_THRESHOLD:
                     continue
 
-                # 條件 3：目前已修正到 MA20 附近
                 current_dev = (last_close - last_ma20) / last_ma20
                 if not (NEAR_MA20_MIN <= current_dev <= NEAR_MA20_MAX):
                     continue
 
-                ma20_slope_pct = (last_ma20 - old_ma20) / old_ma20 * 100
-                peak_idx = int(dev_series.argmax())
+                ma20_slope_pct   = (last_ma20 - old_ma20) / old_ma20 * 100
+                peak_idx         = int(dev_series.argmax())
                 weeks_since_peak = LOOKBACK_WEEKS - 1 - peak_idx
+
+                # 計算布林通道
+                _, bb_upper, bb_lower = calc_bollinger(close, window=20, std_mult=BB_STD)
+
+                # 取最近 CHART_WEEKS 週的 OHLCV + 指標，對齊索引
+                df = pd.DataFrame({
+                    "open":     open_,
+                    "high":     high,
+                    "low":      low,
+                    "close":    close,
+                    "volume":   volume,
+                    "ma20":     ma20,
+                    "bb_upper": bb_upper,
+                    "bb_lower": bb_lower,
+                }).dropna(subset=["close"]).tail(CHART_WEEKS)
+
+                candles, vol_bars, ma_line, bbu_line, bbl_line = [], [], [], [], []
+                for dt, row in df.iterrows():
+                    t = dt.strftime("%Y-%m-%d")
+                    candles.append({
+                        "time":  t,
+                        "open":  round(float(row["open"]),  2),
+                        "high":  round(float(row["high"]),  2),
+                        "low":   round(float(row["low"]),   2),
+                        "close": round(float(row["close"]), 2),
+                    })
+                    vol_bars.append({
+                        "time":  t,
+                        "value": int(row["volume"]) if not pd.isna(row["volume"]) else 0,
+                        "color": "#34d399" if float(row["close"]) >= float(row["open"]) else "#f87171",
+                    })
+                    if not pd.isna(row["ma20"]):
+                        ma_line.append( {"time": t, "value": round(float(row["ma20"]),  2)})
+                        bbu_line.append({"time": t, "value": round(float(row["bb_upper"]), 2)})
+                        bbl_line.append({"time": t, "value": round(float(row["bb_lower"]), 2)})
 
                 code = ticker.replace(".TW", "")
                 results.append({
@@ -119,6 +166,13 @@ def scan_stocks(stocks, batch_size=150):
                     "peak_dev":         round(max_dev * 100,     2),
                     "weeks_since_peak": weeks_since_peak,
                     "ma20_slope_pct":   round(ma20_slope_pct,    2),
+                    "chart": {
+                        "candles":  candles,
+                        "volume":   vol_bars,
+                        "ma20":     ma_line,
+                        "bb_upper": bbu_line,
+                        "bb_lower": bbl_line,
+                    },
                 })
 
             except Exception:
@@ -126,9 +180,13 @@ def scan_stocks(stocks, batch_size=150):
 
     return results
 
-# ── 3. 產生 HTML ──────────────────────────────────────────────────────────────
+# ── 4. 產生 HTML ──────────────────────────────────────────────────────────────
 def gen_html(results, scan_time):
     results.sort(key=lambda x: abs(x["current_dev"]))
+
+    # 把圖表資料分離，只把 code→chart 的映射嵌入 JS
+    chart_data_map = {r["code"]: r["chart"] for r in results}
+    chart_data_json = json.dumps(chart_data_map, ensure_ascii=False)
 
     rows = ""
     for r in results:
@@ -136,10 +194,9 @@ def gen_html(results, scan_time):
         dev_str   = f"{r['current_dev']:+.2f}%"
         peak_str  = f"{r['peak_dev']:+.2f}%"
         slope_str = f"{'▲' if r['ma20_slope_pct'] > 0 else '▼'} {r['ma20_slope_pct']:.2f}%"
-        yahoo_url = f"https://finance.yahoo.com/chart/{r['code']}.TW"
         rows += f"""
-        <tr>
-          <td class="code"><a href="{yahoo_url}" target="_blank" rel="noopener">{r['code']}</a></td>
+        <tr data-code="{r['code']}" data-name="{r['name']}">
+          <td class="code">{r['code']}</td>
           <td>{r['name']}</td>
           <td class="num">{r['close']}</td>
           <td class="num">{r['ma20']}</td>
@@ -155,6 +212,7 @@ def gen_html(results, scan_time):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台股週K MA20 回測清單｜正乖離修正</title>
+  <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
@@ -166,6 +224,7 @@ def gen_html(results, scan_time):
     }}
     h1 {{ font-size: 1.6rem; color: #3b82f6; margin-bottom: 6px; }}
     .subtitle {{ color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px; }}
+
     .stats {{ display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }}
     .stat-card {{
       background: #131f2e; border: 1px solid #2d3f55;
@@ -173,23 +232,27 @@ def gen_html(results, scan_time):
     }}
     .stat-label {{ font-size: 0.78rem; color: #94a3b8; margin-bottom: 4px; }}
     .stat-value {{ font-size: 1.5rem; font-weight: 700; color: #3b82f6; }}
+
     .callout {{
       background: #0f2040; border: 1px solid rgba(59,130,246,0.3);
       border-radius: 8px; color: #93c5fd; font-size: 0.85rem;
       padding: 14px 18px; margin-bottom: 24px; line-height: 1.8;
     }}
     .callout strong {{ color: #60a5fa; }}
+
     .params {{ display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }}
     .param-tag {{
       background: #0f2040; border: 1px solid rgba(59,130,246,0.25);
       border-radius: 20px; color: #7dd3fc; font-size: 0.78rem; padding: 4px 12px;
     }}
+
     .search-bar {{ margin-bottom: 16px; }}
     .search-bar input {{
       background: #131f2e; border: 1px solid #2d3f55; border-radius: 6px;
       color: #e2e8f0; font-size: 0.9rem; padding: 8px 14px; width: 280px; outline: none;
     }}
     .search-bar input:focus {{ border-color: #3b82f6; }}
+
     .table-wrap {{ overflow-x: auto; border-radius: 10px; border: 1px solid #2d3f55; }}
     table {{ width: 100%; border-collapse: collapse; font-size: 0.9rem; }}
     thead tr {{ background: #0f2040; }}
@@ -199,19 +262,96 @@ def gen_html(results, scan_time):
       cursor: pointer; user-select: none;
     }}
     th:hover {{ color: #3b82f6; }}
-    tbody tr {{ border-top: 1px solid #1a2d42; transition: background 0.15s; }}
-    tbody tr:hover {{ background: #131f2e; }}
-    td {{ padding: 10px 16px; white-space: nowrap; }}
-    .code a {{
-      color: #fb923c; font-weight: 600; font-family: monospace;
-      font-size: 0.95rem; text-decoration: none;
+    tbody tr {{
+      border-top: 1px solid #1a2d42; transition: background 0.15s; cursor: pointer;
     }}
-    .code a:hover {{ color: #fdba74; text-decoration: underline; }}
+    tbody tr:hover {{ background: #162030; }}
+    tbody tr.active {{ background: #0f2040; outline: 1px solid #3b82f6; }}
+    td {{ padding: 10px 16px; white-space: nowrap; }}
+    .code {{ color: #fb923c; font-weight: 600; font-family: monospace; font-size: 0.95rem; }}
     .num       {{ text-align: right; }}
     .pos-green {{ color: #34d399; }}
     .neg-red   {{ color: #f87171; }}
     .peak      {{ color: #fb923c; }}
     .up        {{ color: #3b82f6; }}
+
+    /* ── 圖表 Modal ────────────────────────────────────── */
+    .modal-overlay {{
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }}
+    .modal-overlay.open {{ display: flex; }}
+
+    .modal {{
+      background: #0d1826;
+      border: 1px solid #2d3f55;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }}
+
+    .modal-header {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #2d3f55;
+      gap: 12px;
+      flex-shrink: 0;
+    }}
+    .modal-title {{
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }}
+    .modal-title span {{ color: #fb923c; margin-right: 8px; font-family: monospace; }}
+
+    .modal-legend {{
+      display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.78rem;
+    }}
+    .legend-item {{ display: flex; align-items: center; gap: 5px; color: #94a3b8; }}
+    .legend-dot {{
+      width: 20px; height: 3px; border-radius: 2px; flex-shrink: 0;
+    }}
+
+    .modal-close {{
+      background: none; border: none; color: #94a3b8;
+      font-size: 1.4rem; cursor: pointer; line-height: 1;
+      padding: 2px 6px; border-radius: 4px;
+      flex-shrink: 0;
+    }}
+    .modal-close:hover {{ color: #e2e8f0; background: #1e2d40; }}
+
+    .chart-area {{
+      padding: 0 4px 4px;
+      flex: 1;
+      min-height: 0;
+    }}
+
+    #main-chart  {{ width: 100%; height: 340px; }}
+    #vol-chart   {{ width: 100%; height: 100px; margin-top: 2px; }}
+
+    .modal-footer {{
+      padding: 8px 20px;
+      border-top: 1px solid #1a2d42;
+      font-size: 0.75rem;
+      color: #4a6080;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }}
+    .modal-footer a {{ color: #3b82f6; text-decoration: none; }}
+    .modal-footer a:hover {{ text-decoration: underline; }}
+
     footer {{
       margin-top: 36px; padding-top: 16px;
       border-top: 1px solid #2d3f55; font-size: 0.78rem; color: #94a3b8;
@@ -221,7 +361,7 @@ def gen_html(results, scan_time):
 <body>
 
 <h1>台股週K MA20 ｜正乖離修正回測清單</h1>
-<p class="subtitle">掃描時間：{scan_time}　｜　資料來源：Yahoo Finance 週K線（還原權值）</p>
+<p class="subtitle">掃描時間：{scan_time}　｜　資料來源：Yahoo Finance 週K線（還原權值）　｜　點擊列查看週K圖表</p>
 
 <div class="stats">
   <div class="stat-card">
@@ -247,15 +387,17 @@ def gen_html(results, scan_time):
 <div class="callout">
   <strong>篩選邏輯說明</strong><br>
   ① <strong>週 MA20 向上（Moving Average 20-week）</strong>：當前 MA20 高於 {MA20_SLOPE_WEEKS} 週前的 MA20，確認均線處於上升趨勢<br>
-  ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 {LOOKBACK_WEEKS} 週內，收盤價曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}% 以上</strong>，代表曾過熱<br>
-  ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>{int(NEAR_MA20_MIN*100)}% 至 +{int(NEAR_MA20_MAX*100)}%</strong>，股價已回落至均線支撐區
+  ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 {LOOKBACK_WEEKS} 週內，收盤價曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}% 以上</strong><br>
+  ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>{int(NEAR_MA20_MIN*100)}% 至 +{int(NEAR_MA20_MAX*100)}%</strong><br>
+  📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong>
 </div>
 
 <div class="params">
   <span class="param-tag">回看 {LOOKBACK_WEEKS} 週</span>
   <span class="param-tag">大乖離門檻 +{int(BIG_DEV_THRESHOLD*100)}%</span>
   <span class="param-tag">MA20 附近 {int(NEAR_MA20_MIN*100)}%～+{int(NEAR_MA20_MAX*100)}%</span>
-  <span class="param-tag">MA20 斜率參考 {MA20_SLOPE_WEEKS} 週</span>
+  <span class="param-tag">布林通道 MA20 ± {BB_STD}σ</span>
+  <span class="param-tag">圖表顯示 {CHART_WEEKS} 週</span>
 </div>
 
 <div class="search-bar">
@@ -282,33 +424,186 @@ def gen_html(results, scan_time):
   </table>
 </div>
 
+<!-- ── 圖表 Modal ────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>MA20</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fb923c; opacity:.8"></div>BB 上軌</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#a78bfa; opacity:.8"></div>BB 下軌</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="chart-area">
+      <div id="main-chart"></div>
+      <div id="vol-chart"></div>
+    </div>
+    <div class="modal-footer">
+      <span>週K線（還原權值）｜布林通道 MA20 ± {BB_STD}σ</span>
+      <a id="yahooLink" href="#" target="_blank" rel="noopener">在 Yahoo Finance 查看 ↗</a>
+    </div>
+  </div>
+</div>
+
 <footer>
   資料來源：<strong>Yahoo Finance</strong> 週K線（auto_adjust 還原權值）、台灣證券交易所（TWSE）上市股票清單<br>
-  注意：資料僅供參考，不構成任何投資建議。投資有風險，操作前請自行評估。
+  圖表：<strong>TradingView Lightweight Charts</strong>｜注意：資料僅供參考，不構成任何投資建議。
 </footer>
 
 <script>
-  let sortDir = {{}};
-  function sortTable(col) {{
-    const tb   = document.querySelector("#mainTable tbody");
-    const rows = Array.from(tb.querySelectorAll("tr")).filter(r => r.style.display !== "none");
-    const dir  = (sortDir[col] = !sortDir[col]);
-    rows.sort((a, b) => {{
-      let av = a.cells[col].innerText.replace(/[▲▼週前%+,]/g,"").trim();
-      let bv = b.cells[col].innerText.replace(/[▲▼週前%+,]/g,"").trim();
-      let an = parseFloat(av), bn = parseFloat(bv);
-      if (!isNaN(an) && !isNaN(bn)) return dir ? an - bn : bn - an;
-      return dir ? av.localeCompare(bv,"zh") : bv.localeCompare(av,"zh");
-    }});
-    rows.forEach(r => tb.appendChild(r));
-  }}
-  function filterTable() {{
-    const q = document.getElementById("search").value.toLowerCase();
-    document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
-      const txt = row.innerText.toLowerCase();
-      row.style.display = txt.includes(q) ? "" : "none";
-    }});
-  }}
+// ── 圖表資料 ─────────────────────────────────────────────────────────────────
+const CHART_DATA = {chart_data_json};
+
+// ── 排序 ──────────────────────────────────────────────────────────────────────
+let sortDir = {{}};
+function sortTable(col) {{
+  const tb   = document.querySelector("#mainTable tbody");
+  const rows = Array.from(tb.querySelectorAll("tr")).filter(r => r.style.display !== "none");
+  const dir  = (sortDir[col] = !sortDir[col]);
+  rows.sort((a, b) => {{
+    let av = a.cells[col].innerText.replace(/[▲▼週前%+,]/g,"").trim();
+    let bv = b.cells[col].innerText.replace(/[▲▼週前%+,]/g,"").trim();
+    let an = parseFloat(av), bn = parseFloat(bv);
+    if (!isNaN(an) && !isNaN(bn)) return dir ? an - bn : bn - an;
+    return dir ? av.localeCompare(bv,"zh") : bv.localeCompare(av,"zh");
+  }});
+  rows.forEach(r => tb.appendChild(r));
+}}
+
+// ── 搜尋 ──────────────────────────────────────────────────────────────────────
+function filterTable() {{
+  const q = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
+    row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+  }});
+}}
+
+// ── 圖表 ──────────────────────────────────────────────────────────────────────
+let mainChart = null, volChart = null;
+
+function openChart(code, name) {{
+  const data = CHART_DATA[code];
+  if (!data) return;
+
+  // 設定標題
+  document.getElementById("modalTitle").innerHTML = `<span>${{code}}</span>${{name}}`;
+  document.getElementById("yahooLink").href = `https://finance.yahoo.com/chart/${{code}}.TW`;
+  document.getElementById("modalOverlay").classList.add("open");
+
+  // 清除舊圖
+  document.getElementById("main-chart").innerHTML = "";
+  document.getElementById("vol-chart").innerHTML  = "";
+
+  const commonOpts = {{
+    layout:     {{ background: {{ color: "#0d1826" }}, textColor: "#94a3b8" }},
+    grid:       {{ vertLines: {{ color: "#1a2d42" }}, horzLines: {{ color: "#1a2d42" }} }},
+    timeScale:  {{ borderColor: "#2d3f55", timeVisible: true }},
+    rightPriceScale: {{ borderColor: "#2d3f55" }},
+    crosshair:  {{ mode: 1 }},
+    handleScroll: true,
+    handleScale:  true,
+  }};
+
+  // ── 主圖（K線 + BB + MA20）
+  mainChart = LightweightCharts.createChart(
+    document.getElementById("main-chart"),
+    {{ ...commonOpts, height: 340 }}
+  );
+
+  const candleSeries = mainChart.addCandlestickSeries({{
+    upColor:        "#34d399",
+    downColor:      "#f87171",
+    borderUpColor:  "#34d399",
+    borderDownColor:"#f87171",
+    wickUpColor:    "#34d399",
+    wickDownColor:  "#f87171",
+  }});
+  candleSeries.setData(data.candles);
+
+  // BB 填充區域（上下軌之間的帶狀）
+  const bbUpperSeries = mainChart.addLineSeries({{
+    color: "rgba(251,146,60,0.7)",
+    lineWidth: 1,
+    lineStyle: 2,       // dashed
+    priceLineVisible: false,
+    lastValueVisible: false,
+    title: "BB上軌",
+  }});
+  bbUpperSeries.setData(data.bb_upper);
+
+  const bbLowerSeries = mainChart.addLineSeries({{
+    color: "rgba(167,139,250,0.7)",
+    lineWidth: 1,
+    lineStyle: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    title: "BB下軌",
+  }});
+  bbLowerSeries.setData(data.bb_lower);
+
+  const ma20Series = mainChart.addLineSeries({{
+    color: "#3b82f6",
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: true,
+    title: "MA20",
+  }});
+  ma20Series.setData(data.ma20);
+
+  mainChart.timeScale().fitContent();
+
+  // ── 成交量圖
+  volChart = LightweightCharts.createChart(
+    document.getElementById("vol-chart"),
+    {{
+      ...commonOpts,
+      height: 100,
+      rightPriceScale: {{ borderColor: "#2d3f55", scaleMargins: {{ top: 0.1, bottom: 0 }} }},
+    }}
+  );
+
+  const volSeries = volChart.addHistogramSeries({{
+    priceFormat: {{ type: "volume" }},
+    priceScaleId: "right",
+  }});
+  volSeries.setData(data.volume);
+  volChart.timeScale().fitContent();
+
+  // 同步十字線
+  mainChart.subscribeCrosshairMove(param => {{
+    if (param.time) volChart.setCrosshairPosition(0, param.time, volSeries);
+    else volChart.clearCrosshairPosition();
+  }});
+  volChart.subscribeCrosshairMove(param => {{
+    if (param.time) mainChart.setCrosshairPosition(0, param.time, candleSeries);
+    else mainChart.clearCrosshairPosition();
+  }});
+}}
+
+function closeModal() {{
+  document.getElementById("modalOverlay").classList.remove("open");
+  document.querySelectorAll("#mainTable tbody tr").forEach(r => r.classList.remove("active"));
+  if (mainChart) {{ mainChart.remove(); mainChart = null; }}
+  if (volChart)  {{ volChart.remove();  volChart  = null; }}
+}}
+
+function closeModalOnBg(e) {{
+  if (e.target === document.getElementById("modalOverlay")) closeModal();
+}}
+
+// 點擊列開圖
+document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
+  row.addEventListener("click", () => {{
+    document.querySelectorAll("#mainTable tbody tr").forEach(r => r.classList.remove("active"));
+    row.classList.add("active");
+    openChart(row.dataset.code, row.dataset.name);
+  }});
+}});
+
+// ESC 關閉
+document.addEventListener("keydown", e => {{ if (e.key === "Escape") closeModal(); }});
 </script>
 </body>
 </html>
@@ -318,7 +613,7 @@ def gen_html(results, scan_time):
 # ── 主程式 ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 60, flush=True)
-    print("  台股週K MA20 掃描工具 v2（正乖離修正版）", flush=True)
+    print("  台股週K MA20 掃描工具 v3（布林通道版）", flush=True)
     print("=" * 60, flush=True)
 
     stocks = get_twse_stock_list()
@@ -332,7 +627,6 @@ if __name__ == "__main__":
     scan_time = datetime.now().strftime("%Y-%m-%d %H:%M")
     html = gen_html(results, scan_time)
 
-    # 輸出到腳本同目錄的 index.html
     out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
