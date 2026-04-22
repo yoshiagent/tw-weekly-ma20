@@ -1,13 +1,13 @@
 """
-台股週K線過濾工具 v4
+台股週K線過濾工具 v5
 條件：
   1. 週 MA20 向上
   2. 過去 N 週內曾有大正乖離
   3. 目前股價已修正到 MA20 附近
 
 圖表：週K線 + 布林通道（Bollinger Bands）+ 成交量
-附加：三大法人週買賣超（大戶）+ 融資餘額週增減（散戶）
-資料來源：TWSE + Yahoo Finance
+附加：三大法人週買賣超（大戶）+ 融資餘額週增減（散戶）+ 千張大戶比例（TDCC 集保分散表）
+資料來源：TWSE + Yahoo Finance + TDCC 開放資料
 """
 
 import yfinance as yf
@@ -256,6 +256,7 @@ def fetch_institutional_weekly(trading_days):
 
 # ── 6. 融資餘額週增減（散戶代理指標）─────────────────────────────────────────
 MARGIN_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "margin_cache.json")
+TDCC_CACHE_PATH   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tdcc_cache.json")
 
 def fetch_margin_current():
     """從 TWSE openapi 取得當日融資餘額（含前日）"""
@@ -317,7 +318,88 @@ def get_margin_weekly_change():
 
     return weekly_chg
 
-# ── 7. 產生 HTML ──────────────────────────────────────────────────────────────
+# ── 7. TDCC 集保分散表 — 千張大戶比例 ────────────────────────────────────────
+def fetch_tdcc_big_holder():
+    """
+    從 TDCC 開放資料下載集保分散表 CSV
+    Level 15 = 持股 1,000,001 股以上（千張以上）
+    回傳 dict: code -> {"pct": float, "date": str}
+    """
+    url = "https://opendata.tdcc.com.tw/getOD.ashx?id=1-5"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    try:
+        r = requests.get(url, timeout=60, headers=headers)
+        text = r.content.decode("utf-8-sig")
+        lines = text.splitlines()
+
+        result = {}
+        data_date = None
+
+        for line in lines[1:]:   # 跳過標題列
+            parts = line.split(",")
+            if len(parts) < 6:
+                continue
+            date_str = parts[0].strip()
+            code     = parts[1].strip()   # 去除尾端空格
+            level    = parts[2].strip()
+
+            if not data_date and date_str:
+                data_date = date_str
+
+            # 只保留 4 碼純數字（一般上市股票）
+            if not (code.isdigit() and len(code) == 4):
+                continue
+
+            # Level 15 = 千張以上（1,000,001 股以上）
+            if level == "15":
+                try:
+                    pct = float(parts[5].strip())
+                    result[code] = {"pct": pct, "date": date_str}
+                except Exception:
+                    pass
+
+        print(f"   TDCC 集保資料日期：{data_date}，共 {len(result)} 檔", flush=True)
+        return result
+    except Exception as e:
+        print(f"   ⚠ TDCC 資料抓取失敗：{e}", flush=True)
+        return {}
+
+def get_tdcc_weekly_change():
+    """
+    比對本次與上次快取的千張大戶比例，計算週增減
+    回傳 dict: code -> {"pct": float, "chg": float or None}
+    """
+    prev_tdcc = {}
+    if os.path.exists(TDCC_CACHE_PATH):
+        try:
+            with open(TDCC_CACHE_PATH, "r", encoding="utf-8") as f:
+                prev_tdcc = json.load(f)
+        except Exception:
+            pass
+
+    print("   抓 TDCC 千張大戶比例…", flush=True)
+    curr_tdcc = fetch_tdcc_big_holder()
+
+    result = {}
+    for code, curr_data in curr_tdcc.items():
+        pct = curr_data["pct"]
+        if prev_tdcc and code in prev_tdcc:
+            prev_pct = prev_tdcc[code].get("pct", pct)
+            chg = round(pct - prev_pct, 2)
+        else:
+            chg = None   # 第一次執行
+        result[code] = {"pct": pct, "chg": chg}
+
+    # 儲存本次快取（供下週比對）
+    try:
+        with open(TDCC_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(curr_tdcc, f, ensure_ascii=False)
+    except Exception as e:
+        print(f"   ⚠ TDCC 快取儲存失敗：{e}", flush=True)
+
+    return result
+
+# ── 8. 產生 HTML ──────────────────────────────────────────────────────────────
 def gen_html(results, scan_time):
     results.sort(key=lambda x: abs(x["current_dev"]))
 
@@ -349,6 +431,29 @@ def gen_html(results, scan_time):
             margin_color = "neg-green" if mc > 0 else ("pos-red" if mc < 0 else "neutral")
             margin_str   = f"{mc:+,}"
 
+        # 千張大戶比例 & 週增減（TDCC）
+        tdcc = r.get("tdcc") or {}
+        big_pct = tdcc.get("pct")
+        big_chg = tdcc.get("chg")
+        if big_pct is None:
+            big_pct_str = "—"
+            big_pct_color = "neutral"
+        else:
+            big_pct_str   = f"{big_pct:.2f}%"
+            big_pct_color = "neutral"
+        if big_chg is None:
+            big_chg_str = "初次"
+            big_chg_color = "neutral"
+        elif big_chg > 0:
+            big_chg_str   = f"+{big_chg:.2f}%"
+            big_chg_color = "pos-red"    # 大戶增加 → 紅（看漲）
+        elif big_chg < 0:
+            big_chg_str   = f"{big_chg:.2f}%"
+            big_chg_color = "neg-green"  # 大戶減少 → 綠（偏弱）
+        else:
+            big_chg_str   = "0.00%"
+            big_chg_color = "neutral"
+
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
@@ -361,6 +466,8 @@ def gen_html(results, scan_time):
           <td class="num up">{slope_str}</td>
           <td class="num {inst_color}">{inst_str}</td>
           <td class="num {margin_color}">{margin_str}</td>
+          <td class="num {big_pct_color}">{big_pct_str}</td>
+          <td class="num {big_chg_color}">{big_chg_str}</td>
         </tr>"""
 
     html = f"""<!DOCTYPE html>
@@ -554,8 +661,9 @@ def gen_html(results, scan_time):
   ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 {LOOKBACK_WEEKS} 週內，收盤價曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}% 以上</strong><br>
   ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>{int(NEAR_MA20_MIN*100)}% 至 +{int(NEAR_MA20_MAX*100)}%</strong><br>
   📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong><br>
-  👥 <strong>大戶週買賣（萬股）</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
-  💳 <strong>散戶融資週增減（張）</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）
+  👥 <strong>法人(萬股)</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
+  💳 <strong>融資週增減(張)</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）<br>
+  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）
 </div>
 
 <div class="params">
@@ -584,6 +692,8 @@ def gen_html(results, scan_time):
         <th onclick="sortTable(7)">MA20斜率 ↕</th>
         <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人(萬股) ↕</th>
         <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">融資週增減(張) ↕</th>
+        <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張大戶比 ↕</th>
+        <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=大戶加碼，負值綠=大戶減倉">千張週增減 ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -804,13 +914,17 @@ if __name__ == "__main__":
     # ④ 取得融資週增減（散戶）
     margin_weekly = get_margin_weekly_change()
 
-    # ⑤ 合併到 results
+    # ⑤ 取得千張大戶比例（TDCC）
+    tdcc_data = get_tdcc_weekly_change()
+
+    # ⑥ 合併到 results
     for r in results:
         code = r["code"]
         r["institutional"] = institutional.get(code)
         r["margin_chg"]    = margin_weekly.get(code)
+        r["tdcc"]          = tdcc_data.get(code)
 
-    # ⑥ 產生 HTML
+    # ⑦ 產生 HTML
     scan_time = datetime.now().strftime("%Y-%m-%d %H:%M")
     html = gen_html(results, scan_time)
 
