@@ -162,7 +162,7 @@
 <div class="stats">
   <div class="stat-card" style="border-color: rgba(59,130,246,0.5);">
     <div class="stat-label">最後更新</div>
-    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-04-22 20:31</div>
+    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-04-22 21:07</div>
   </div>
   <div class="stat-card">
     <div class="stat-label">符合條件股票</div>
@@ -227,6 +227,7 @@
         <th onclick="sortTable(12)" title="前高至收盤區間的加權成交量（萬張），代表上方套牢壓力">壓力 ↕</th>
         <th onclick="sortTable(13)" title="收盤至(收盤-D)等寬區間的加權成交量（萬張），代表下方支撐籌碼">支撐 ↕</th>
         <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓 ↕</th>
+        <th onclick="sortTable(15)" title="本週成交金額÷回看期間峰值成交金額，越低表示縮量修正越健康">量縮比 ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -240,13 +241,14 @@
           <td class="num peak">+26.19%</td>
           <td class="num">12 週前</td>
           <td class="num up">▲ 2.43%</td>
-          <td class="num pos-red">+44.0</td>
+          <td class="num pos-red">+71.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">72.30%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">77.7</td>
           <td class="num neutral">81.8</td>
           <td class="num neg-green">1.05</td>
+          <td class="num ratio-high">0.05</td>
         </tr>
         <tr data-code="1514" data-name="亞力">
           <td class="code">1514</td>
@@ -257,13 +259,14 @@
           <td class="num peak">+37.80%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 2.05%</td>
-          <td class="num neg-green">-129.2</td>
+          <td class="num neg-green">-79.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.40%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">190</td>
           <td class="num neutral">149</td>
           <td class="num neutral">0.78</td>
+          <td class="num ratio-high">0.04</td>
         </tr>
         <tr data-code="5522" data-name="遠雄">
           <td class="code">5522</td>
@@ -274,13 +277,14 @@
           <td class="num peak">+20.07%</td>
           <td class="num">15 週前</td>
           <td class="num up">▲ 4.05%</td>
-          <td class="num neg-green">-80.7</td>
+          <td class="num neg-green">-119.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">87.37%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">27.8</td>
           <td class="num neutral">20.3</td>
           <td class="num neutral">0.73</td>
+          <td class="num neutral">0.51</td>
         </tr>
         <tr data-code="6770" data-name="力積電">
           <td class="code">6770</td>
@@ -291,13 +295,14 @@
           <td class="num peak">+87.08%</td>
           <td class="num">12 週前</td>
           <td class="num up">▲ 8.03%</td>
-          <td class="num pos-red">+1,527.0</td>
+          <td class="num neg-green">-1,413.7</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">40.45%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">1217</td>
           <td class="num neutral">904</td>
           <td class="num neutral">0.74</td>
+          <td class="num ratio-high">0.15</td>
         </tr>
         <tr data-code="4912" data-name="聯德控股-KY">
           <td class="code">4912</td>
@@ -308,13 +313,14 @@
           <td class="num peak">+21.36%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 1.14%</td>
-          <td class="num pos-red">+25.3</td>
+          <td class="num pos-red">+28.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.31%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">6.54</td>
           <td class="num neutral">5.63</td>
           <td class="num neutral">0.86</td>
+          <td class="num ratio-high">0.13</td>
         </tr>
         <tr data-code="1513" data-name="中興電">
           <td class="code">1513</td>
@@ -325,13 +331,14 @@
           <td class="num peak">+19.48%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 0.27%</td>
-          <td class="num neg-green">-134.7</td>
+          <td class="num neg-green">-86.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">40.38%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">256</td>
           <td class="num neutral">112</td>
           <td class="num neg-red">0.44</td>
+          <td class="num ratio-high">0.05</td>
         </tr>
         <tr data-code="6505" data-name="台塑化">
           <td class="code">6505</td>
@@ -342,13 +349,14 @@
           <td class="num peak">+23.35%</td>
           <td class="num">7 週前</td>
           <td class="num up">▲ 0.42%</td>
-          <td class="num pos-red">+221.9</td>
+          <td class="num pos-red">+1,128.1</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">94.18%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">182</td>
           <td class="num neutral">197</td>
           <td class="num neg-green">1.08</td>
+          <td class="num ratio-high">0.08</td>
         </tr>
         <tr data-code="6239" data-name="力成">
           <td class="code">6239</td>
@@ -359,13 +367,14 @@
           <td class="num peak">+60.44%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 5.33%</td>
-          <td class="num neg-green">-966.8</td>
+          <td class="num neg-green">-2,211.2</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">68.44%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">58.2</td>
           <td class="num neutral">127</td>
           <td class="num ratio-high">2.18</td>
+          <td class="num ratio-high">0.22</td>
         </tr>
         <tr data-code="3025" data-name="星通">
           <td class="code">3025</td>
@@ -376,13 +385,14 @@
           <td class="num peak">+38.60%</td>
           <td class="num">15 週前</td>
           <td class="num up">▲ 4.78%</td>
-          <td class="num pos-red">+24.4</td>
+          <td class="num pos-red">+28.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">14.32%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">65.3</td>
           <td class="num neutral">27.4</td>
           <td class="num neg-red">0.42</td>
+          <td class="num ratio-high">0.11</td>
         </tr>
         <tr data-code="6753" data-name="龍德造船">
           <td class="code">6753</td>
@@ -393,13 +403,14 @@
           <td class="num peak">+15.54%</td>
           <td class="num">8 週前</td>
           <td class="num up">▲ 2.22%</td>
-          <td class="num pos-red">+149.0</td>
+          <td class="num pos-red">+122.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">55.42%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">29.3</td>
           <td class="num neutral">47.1</td>
           <td class="num ratio-high">1.61</td>
+          <td class="num ratio-high">0.13</td>
         </tr>
         <tr data-code="8131" data-name="福懋科">
           <td class="code">8131</td>
@@ -410,13 +421,14 @@
           <td class="num peak">+70.97%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 6.00%</td>
-          <td class="num pos-red">+157.6</td>
+          <td class="num pos-red">+42.1</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">69.17%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">77.0</td>
           <td class="num neutral">73.7</td>
           <td class="num neutral">0.96</td>
+          <td class="num ratio-high">0.06</td>
         </tr>
         <tr data-code="2006" data-name="東和鋼鐵">
           <td class="code">2006</td>
@@ -427,13 +439,14 @@
           <td class="num peak">+18.04%</td>
           <td class="num">7 週前</td>
           <td class="num up">▲ 2.38%</td>
-          <td class="num neg-green">-7.5</td>
+          <td class="num pos-red">+28.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">75.38%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">17.3</td>
           <td class="num neutral">58.8</td>
           <td class="num ratio-high">3.39</td>
+          <td class="num ratio-high">0.23</td>
         </tr>
         <tr data-code="1519" data-name="華城">
           <td class="code">1519</td>
@@ -444,13 +457,14 @@
           <td class="num peak">+44.71%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 3.32%</td>
-          <td class="num neg-green">-157.2</td>
+          <td class="num neg-green">-192.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">68.88%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">17.0</td>
           <td class="num neutral">48.4</td>
           <td class="num ratio-high">2.85</td>
+          <td class="num ratio-high">0.22</td>
         </tr>
         <tr data-code="6446" data-name="藥華藥">
           <td class="code">6446</td>
@@ -461,13 +475,14 @@
           <td class="num peak">+45.80%</td>
           <td class="num">12 週前</td>
           <td class="num up">▲ 5.03%</td>
-          <td class="num pos-red">+94.9</td>
+          <td class="num pos-red">+38.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">41.96%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">17.1</td>
           <td class="num neutral">55.6</td>
           <td class="num ratio-high">3.25</td>
+          <td class="num ratio-high">0.09</td>
         </tr>
         <tr data-code="2404" data-name="漢唐">
           <td class="code">2404</td>
@@ -478,13 +493,14 @@
           <td class="num peak">+24.31%</td>
           <td class="num">8 週前</td>
           <td class="num up">▲ 3.49%</td>
-          <td class="num pos-red">+216.3</td>
+          <td class="num pos-red">+142.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">36.42%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">18.5</td>
           <td class="num neutral">35.5</td>
           <td class="num ratio-high">1.92</td>
+          <td class="num neg-green">0.45</td>
         </tr>
         <tr data-code="2449" data-name="京元電子">
           <td class="code">2449</td>
@@ -495,13 +511,14 @@
           <td class="num peak">+35.48%</td>
           <td class="num">12 週前</td>
           <td class="num up">▲ 4.42%</td>
-          <td class="num neg-green">-1,866.4</td>
+          <td class="num neg-green">-1,564.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">62.43%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">69.5</td>
           <td class="num neutral">92.2</td>
           <td class="num neg-green">1.33</td>
+          <td class="num neutral">0.52</td>
         </tr>
         <tr data-code="2891" data-name="中信金">
           <td class="code">2891</td>
@@ -512,13 +529,14 @@
           <td class="num peak">+17.38%</td>
           <td class="num">8 週前</td>
           <td class="num up">▲ 4.13%</td>
-          <td class="num neg-green">-4,667.3</td>
+          <td class="num neg-green">-6,342.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">78.78%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">78.5</td>
           <td class="num neutral">186</td>
           <td class="num ratio-high">2.36</td>
+          <td class="num neg-green">0.49</td>
         </tr>
         <tr data-code="3305" data-name="昇貿">
           <td class="code">3305</td>
@@ -529,13 +547,14 @@
           <td class="num peak">+15.04%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 3.02%</td>
-          <td class="num pos-red">+228.3</td>
+          <td class="num pos-red">+104.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">36.67%</td>
           <td class="num neutral">0.00%</td>
           <td class="num neutral">56.9</td>
           <td class="num neutral">83.4</td>
           <td class="num neg-green">1.47</td>
+          <td class="num ratio-high">0.09</td>
         </tr>
     </tbody>
   </table>

@@ -171,6 +171,16 @@ def scan_stocks(stocks, batch_size=150):
                     support_vol = 0
                     vol_ratio   = None
 
+                # ── 量縮比 = 本週成交金額 / 峰值成交金額 ────────────────────
+                # 成交金額 ≈ 週成交量 × 收盤價（proxy）
+                recent_turnover = (
+                    close.iloc[-LOOKBACK_WEEKS:].values *
+                    volume.iloc[-LOOKBACK_WEEKS:].values
+                )
+                peak_turnover    = float(np.nanmax(recent_turnover)) if len(recent_turnover) > 0 else 0
+                this_w_turnover  = float(volume.iloc[-1]) * last_close
+                vol_shrink_ratio = round(this_w_turnover / peak_turnover, 2) if peak_turnover > 0 else None
+
                 # 計算布林通道
                 _, bb_upper, bb_lower = calc_bollinger(close, window=20, std_mult=BB_STD)
 
@@ -220,6 +230,7 @@ def scan_stocks(stocks, batch_size=150):
                     "resist_vol":       resist_vol,    # 單位：股（shares）
                     "support_vol":      support_vol,
                     "vol_ratio":        vol_ratio,
+                    "vol_shrink_ratio": vol_shrink_ratio,
                     "chart": {
                         "candles":  candles,
                         "volume":   vol_bars,
@@ -538,6 +549,21 @@ def gen_html(results, scan_time):
             ratio_str   = f"{vr:.2f}"
             ratio_color = "neg-red"       # 壓力明顯 → 紅
 
+        # ── 量縮比 ────────────────────────────────────────────────────────
+        vsr = r.get("vol_shrink_ratio")
+        if vsr is None:
+            vsr_str, vsr_color = "—", "neutral"
+        else:
+            vsr_str = f"{vsr:.2f}"
+            if vsr <= 0.3:
+                vsr_color = "ratio-high"   # 深綠：量大幅萎縮，修正健康
+            elif vsr <= 0.5:
+                vsr_color = "neg-green"    # 綠：明顯縮量
+            elif vsr <= 0.8:
+                vsr_color = "neutral"      # 灰：輕微縮量
+            else:
+                vsr_color = "neg-red"      # 紅：量未縮，修正不健康
+
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
@@ -555,6 +581,7 @@ def gen_html(results, scan_time):
           <td class="num neutral">{resist_str}</td>
           <td class="num neutral">{support_str}</td>
           <td class="num {ratio_color}">{ratio_str}</td>
+          <td class="num {vsr_color}">{vsr_str}</td>
         </tr>"""
 
     html = f"""<!DOCTYPE html>
@@ -786,6 +813,7 @@ def gen_html(results, scan_time):
         <th onclick="sortTable(12)" title="前高至收盤區間的加權成交量（萬張），代表上方套牢壓力">壓力 ↕</th>
         <th onclick="sortTable(13)" title="收盤至(收盤-D)等寬區間的加權成交量（萬張），代表下方支撐籌碼">支撐 ↕</th>
         <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓 ↕</th>
+        <th onclick="sortTable(15)" title="本週成交金額÷回看期間峰值成交金額，越低表示縮量修正越健康">量縮比 ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -1017,6 +1045,7 @@ def save_excel(results, scan_time):
             "壓力(萬張)":  round(rv / 1e7, 2) if rv else None,
             "支撐(萬張)":  round(sv / 1e7, 2) if sv else None,
             "支/壓":       vr,
+            "量縮比":      r.get("vol_shrink_ratio"),
         })
 
     df = pd.DataFrame(rows)
@@ -1096,7 +1125,7 @@ def save_excel(results, scan_time):
             "乖離%": 7, "峰乖離%": 8, "距峰(週)": 8, "斜率%": 7,
             "法人(萬股)": 10, "融資增減(張)": 11,
             "千張比%": 8, "千張週變%": 8,
-            "壓力(萬張)": 9, "支撐(萬張)": 9, "支/壓": 7,
+            "壓力(萬張)": 9, "支撐(萬張)": 9, "支/壓": 7, "量縮比": 7,
         }
         for col_idx, col_name in enumerate(df.columns, start=1):
             ws.column_dimensions[get_column_letter(col_idx)].width = col_widths.get(col_name, 10)
