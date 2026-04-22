@@ -69,6 +69,7 @@
     .neutral    { color: #94a3b8; }
     .peak       { color: #fb923c; }
     .up         { color: #3b82f6; }
+    .ratio-high { color: #4ade80; font-weight: 700; }
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {
@@ -161,7 +162,7 @@
 <div class="stats">
   <div class="stat-card" style="border-color: rgba(59,130,246,0.5);">
     <div class="stat-label">最後更新</div>
-    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-04-22 15:29</div>
+    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-04-22 16:11</div>
   </div>
   <div class="stat-card">
     <div class="stat-label">符合條件股票</div>
@@ -191,7 +192,8 @@
   📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, 2σ）</strong><br>
   👥 <strong>法人(萬股)</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
   💳 <strong>融資週增減(張)</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）<br>
-  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）
+  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）<br>
+  📊 <strong>壓力量／支撐量</strong>：以週K線均勻分布法估算，D＝前高－收盤；壓力量＝[收盤, 前高]區間歷史成交量；支撐量＝[收盤－D, 收盤]等寬區間歷史成交量；<strong>支/壓比值</strong>＞1.5 深綠＝支撐顯著強，＞1.0 綠＝支撐佔優，＜0.67 紅＝壓力明顯
 </div>
 
 <div class="params">
@@ -222,6 +224,9 @@
         <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">融資週增減(張) ↕</th>
         <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張大戶比 ↕</th>
         <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=大戶加碼，負值綠=大戶減倉">千張週增減 ↕</th>
+        <th onclick="sortTable(12)" title="前高至收盤的加權成交量（萬張），代表上方套牢壓力">壓力量(萬張) ↕</th>
+        <th onclick="sortTable(13)" title="收盤至(收盤-D)的加權成交量（萬張），代表下方支撐籌碼">支撐量(萬張) ↕</th>
+        <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓比值 ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -238,7 +243,10 @@
           <td class="num pos-red">+44.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">72.30%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">77.7</td>
+          <td class="num neutral">81.8</td>
+          <td class="num neg-green">1.05</td>
         </tr>
         <tr data-code="1514" data-name="亞力">
           <td class="code">1514</td>
@@ -252,7 +260,10 @@
           <td class="num neg-green">-129.2</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.40%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">190</td>
+          <td class="num neutral">149</td>
+          <td class="num neutral">0.78</td>
         </tr>
         <tr data-code="5522" data-name="遠雄">
           <td class="code">5522</td>
@@ -266,7 +277,10 @@
           <td class="num neg-green">-80.7</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">87.37%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">27.8</td>
+          <td class="num neutral">20.3</td>
+          <td class="num neutral">0.73</td>
         </tr>
         <tr data-code="6770" data-name="力積電">
           <td class="code">6770</td>
@@ -280,7 +294,10 @@
           <td class="num pos-red">+1,527.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">40.45%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">1217</td>
+          <td class="num neutral">904</td>
+          <td class="num neutral">0.74</td>
         </tr>
         <tr data-code="4912" data-name="聯德控股-KY">
           <td class="code">4912</td>
@@ -294,7 +311,10 @@
           <td class="num pos-red">+25.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.31%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">6.54</td>
+          <td class="num neutral">5.63</td>
+          <td class="num neutral">0.86</td>
         </tr>
         <tr data-code="1513" data-name="中興電">
           <td class="code">1513</td>
@@ -308,7 +328,10 @@
           <td class="num neg-green">-134.7</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">40.38%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">256</td>
+          <td class="num neutral">112</td>
+          <td class="num neg-red">0.44</td>
         </tr>
         <tr data-code="6505" data-name="台塑化">
           <td class="code">6505</td>
@@ -322,7 +345,10 @@
           <td class="num pos-red">+221.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">94.18%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">182</td>
+          <td class="num neutral">197</td>
+          <td class="num neg-green">1.08</td>
         </tr>
         <tr data-code="6239" data-name="力成">
           <td class="code">6239</td>
@@ -336,7 +362,10 @@
           <td class="num neg-green">-966.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">68.44%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">58.2</td>
+          <td class="num neutral">127</td>
+          <td class="num ratio-high">2.18</td>
         </tr>
         <tr data-code="3025" data-name="星通">
           <td class="code">3025</td>
@@ -350,7 +379,10 @@
           <td class="num pos-red">+24.4</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">14.32%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">65.3</td>
+          <td class="num neutral">27.4</td>
+          <td class="num neg-red">0.42</td>
         </tr>
         <tr data-code="6753" data-name="龍德造船">
           <td class="code">6753</td>
@@ -364,7 +396,10 @@
           <td class="num pos-red">+149.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">55.42%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">29.3</td>
+          <td class="num neutral">47.1</td>
+          <td class="num ratio-high">1.61</td>
         </tr>
         <tr data-code="8131" data-name="福懋科">
           <td class="code">8131</td>
@@ -378,7 +413,10 @@
           <td class="num pos-red">+157.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">69.17%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">77.0</td>
+          <td class="num neutral">73.7</td>
+          <td class="num neutral">0.96</td>
         </tr>
         <tr data-code="2006" data-name="東和鋼鐵">
           <td class="code">2006</td>
@@ -392,7 +430,10 @@
           <td class="num neg-green">-7.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">75.38%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">17.3</td>
+          <td class="num neutral">58.8</td>
+          <td class="num ratio-high">3.39</td>
         </tr>
         <tr data-code="1519" data-name="華城">
           <td class="code">1519</td>
@@ -406,7 +447,10 @@
           <td class="num neg-green">-157.2</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">68.88%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">17.0</td>
+          <td class="num neutral">48.4</td>
+          <td class="num ratio-high">2.85</td>
         </tr>
         <tr data-code="6446" data-name="藥華藥">
           <td class="code">6446</td>
@@ -420,7 +464,10 @@
           <td class="num pos-red">+94.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">41.96%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">17.1</td>
+          <td class="num neutral">55.6</td>
+          <td class="num ratio-high">3.25</td>
         </tr>
         <tr data-code="2404" data-name="漢唐">
           <td class="code">2404</td>
@@ -434,7 +481,10 @@
           <td class="num pos-red">+216.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">36.42%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">18.5</td>
+          <td class="num neutral">35.5</td>
+          <td class="num ratio-high">1.92</td>
         </tr>
         <tr data-code="2449" data-name="京元電子">
           <td class="code">2449</td>
@@ -448,7 +498,10 @@
           <td class="num neg-green">-1,866.4</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">62.43%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">69.5</td>
+          <td class="num neutral">92.2</td>
+          <td class="num neg-green">1.33</td>
         </tr>
         <tr data-code="2891" data-name="中信金">
           <td class="code">2891</td>
@@ -462,7 +515,10 @@
           <td class="num neg-green">-4,667.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">78.78%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">78.5</td>
+          <td class="num neutral">186</td>
+          <td class="num ratio-high">2.36</td>
         </tr>
         <tr data-code="3305" data-name="昇貿">
           <td class="code">3305</td>
@@ -476,7 +532,10 @@
           <td class="num pos-red">+228.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">36.67%</td>
-          <td class="num neutral">初次</td>
+          <td class="num neutral">0.00%</td>
+          <td class="num neutral">56.9</td>
+          <td class="num neutral">83.4</td>
+          <td class="num neg-green">1.47</td>
         </tr>
     </tbody>
   </table>

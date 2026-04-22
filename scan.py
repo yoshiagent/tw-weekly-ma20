@@ -12,6 +12,7 @@
 
 import yfinance as yf
 import pandas as pd
+import numpy as np
 import requests
 import sys
 import os
@@ -55,7 +56,24 @@ def calc_bollinger(close_series, window=20, std_mult=2):
     lower = ma - std_mult * std
     return ma, upper, lower
 
-# ── 3. 批次下載週K線並套用篩選條件 ───────────────────────────────────────────
+# ── 3. 計算特定價格區間的加權成交量（Volume Profile 近似）────────────────────
+def calc_zone_volume(highs, lows, volumes, z_low, z_high):
+    """
+    假設每根 K 棒成交量均勻分布在 [low, high] 區間，
+    估算落在 [z_low, z_high] 的成交量占比。
+    輸入為 numpy array；回傳整數（股）。
+    """
+    if z_high <= z_low:
+        return 0
+    span    = highs - lows                                   # 每根 K 棒的價格跨幅
+    ol_low  = np.maximum(z_low,  lows)
+    ol_high = np.minimum(z_high, highs)
+    overlap = np.maximum(0.0, ol_high - ol_low)
+    valid   = span > 0
+    prop    = np.where(valid, overlap / np.where(valid, span, 1.0), 0.0)
+    return int(np.sum(volumes * prop))
+
+# ── 4. 批次下載週K線並套用篩選條件 ───────────────────────────────────────────
 def scan_stocks(stocks, batch_size=150):
     results = []
     total = len(stocks)
@@ -127,6 +145,32 @@ def scan_stocks(stocks, batch_size=150):
                 peak_idx         = int(dev_series.argmax())
                 weeks_since_peak = LOOKBACK_WEEKS - 1 - peak_idx
 
+                # ── 壓力量 / 支撐量（Volume Profile 近似）────────────────────
+                # 前高 = LOOKBACK_WEEKS 內的最高 high
+                prev_high_price = float(high.iloc[-LOOKBACK_WEEKS:].max())
+                D_val = prev_high_price - last_close
+
+                # 使用全部可用週K資料進行估算
+                _df_vp = pd.DataFrame({
+                    "high":   high,
+                    "low":    low,
+                    "volume": volume,
+                }).dropna()
+                _h = _df_vp["high"].astype(float).values
+                _l = _df_vp["low"].astype(float).values
+                _v = _df_vp["volume"].astype(float).values
+
+                if D_val > 0 and len(_df_vp) > 0:
+                    resist_vol = calc_zone_volume(_h, _l, _v,
+                                                  last_close, prev_high_price)
+                    support_vol = calc_zone_volume(_h, _l, _v,
+                                                   last_close - D_val, last_close)
+                    vol_ratio = round(support_vol / resist_vol, 2) if resist_vol > 0 else None
+                else:
+                    resist_vol  = 0
+                    support_vol = 0
+                    vol_ratio   = None
+
                 # 計算布林通道
                 _, bb_upper, bb_lower = calc_bollinger(close, window=20, std_mult=BB_STD)
 
@@ -172,6 +216,10 @@ def scan_stocks(stocks, batch_size=150):
                     "peak_dev":         round(max_dev * 100,     2),
                     "weeks_since_peak": weeks_since_peak,
                     "ma20_slope_pct":   round(ma20_slope_pct,    2),
+                    "prev_high":        round(prev_high_price,   2),
+                    "resist_vol":       resist_vol,    # 單位：股（shares）
+                    "support_vol":      support_vol,
+                    "vol_ratio":        vol_ratio,
                     "chart": {
                         "candles":  candles,
                         "volume":   vol_bars,
@@ -186,7 +234,7 @@ def scan_stocks(stocks, batch_size=150):
 
     return results
 
-# ── 4. 取得近期有資料的交易日清單 ─────────────────────────────────────────────
+# ── 5. 取得近期有資料的交易日清單 ─────────────────────────────────────────────
 def get_trading_days(n=10):
     """找最近 n 個有三大法人資料的交易日"""
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -208,7 +256,7 @@ def get_trading_days(n=10):
         d -= timedelta(days=1)
     return days  # 由新到舊
 
-# ── 5. 三大法人週買賣超（大戶）─────────────────────────────────────────────────
+# ── 6. 三大法人週買賣超（大戶）─────────────────────────────────────────────────
 def fetch_institutional_weekly(trading_days):
     """
     取最近兩週共 10 個交易日的 T86 資料
@@ -254,7 +302,7 @@ def fetch_institutional_weekly(trading_days):
         }
     return result
 
-# ── 6. 融資餘額週增減（散戶代理指標）─────────────────────────────────────────
+# ── 7. 融資餘額週增減（散戶代理指標）─────────────────────────────────────────
 MARGIN_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "margin_cache.json")
 TDCC_CACHE_PATH   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tdcc_cache.json")
 
@@ -318,7 +366,7 @@ def get_margin_weekly_change():
 
     return weekly_chg
 
-# ── 7. TDCC 集保分散表 — 千張大戶比例 ────────────────────────────────────────
+# ── 8. TDCC 集保分散表 — 千張大戶比例 ────────────────────────────────────────
 def fetch_tdcc_big_holder():
     """
     從 TDCC 開放資料下載集保分散表 CSV
@@ -399,7 +447,7 @@ def get_tdcc_weekly_change():
 
     return result
 
-# ── 8. 產生 HTML ──────────────────────────────────────────────────────────────
+# ── 9. 產生 HTML ──────────────────────────────────────────────────────────────
 def gen_html(results, scan_time):
     results.sort(key=lambda x: abs(x["current_dev"]))
 
@@ -454,6 +502,42 @@ def gen_html(results, scan_time):
             big_chg_str   = "0.00%"
             big_chg_color = "neutral"
 
+        # ── 壓力量 / 支撐量 / 比值 ────────────────────────────────────────
+        # 顯示單位：萬張（1萬張 = 10,000,000 股）
+        def _vol_fmt(v):
+            if v is None or v == 0:
+                return "—"
+            wan = v / 1e7
+            if wan >= 100:
+                return f"{wan:.0f}"
+            elif wan >= 10:
+                return f"{wan:.1f}"
+            else:
+                return f"{wan:.2f}"
+
+        rv = r.get("resist_vol",  0)
+        sv = r.get("support_vol", 0)
+        vr = r.get("vol_ratio")
+
+        resist_str  = _vol_fmt(rv)
+        support_str = _vol_fmt(sv)
+
+        if vr is None:
+            ratio_str   = "—"
+            ratio_color = "neutral"
+        elif vr >= 1.5:
+            ratio_str   = f"{vr:.2f}"
+            ratio_color = "ratio-high"    # 支撐強 → 深綠
+        elif vr >= 1.0:
+            ratio_str   = f"{vr:.2f}"
+            ratio_color = "neg-green"     # 支撐 > 壓力 → 綠
+        elif vr >= 0.67:
+            ratio_str   = f"{vr:.2f}"
+            ratio_color = "neutral"       # 接近平衡
+        else:
+            ratio_str   = f"{vr:.2f}"
+            ratio_color = "neg-red"       # 壓力明顯 → 紅
+
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
@@ -468,6 +552,9 @@ def gen_html(results, scan_time):
           <td class="num {margin_color}">{margin_str}</td>
           <td class="num {big_pct_color}">{big_pct_str}</td>
           <td class="num {big_chg_color}">{big_chg_str}</td>
+          <td class="num neutral">{resist_str}</td>
+          <td class="num neutral">{support_str}</td>
+          <td class="num {ratio_color}">{ratio_str}</td>
         </tr>"""
 
     html = f"""<!DOCTYPE html>
@@ -541,6 +628,7 @@ def gen_html(results, scan_time):
     .neutral    {{ color: #94a3b8; }}
     .peak       {{ color: #fb923c; }}
     .up         {{ color: #3b82f6; }}
+    .ratio-high {{ color: #4ade80; font-weight: 700; }}
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {{
@@ -663,7 +751,8 @@ def gen_html(results, scan_time):
   📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong><br>
   👥 <strong>法人(萬股)</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
   💳 <strong>融資週增減(張)</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）<br>
-  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）
+  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）<br>
+  📊 <strong>壓力量／支撐量</strong>：以週K線均勻分布法估算，D＝前高－收盤；壓力量＝[收盤, 前高]區間歷史成交量；支撐量＝[收盤－D, 收盤]等寬區間歷史成交量；<strong>支/壓比值</strong>＞1.5 深綠＝支撐顯著強，＞1.0 綠＝支撐佔優，＜0.67 紅＝壓力明顯
 </div>
 
 <div class="params">
@@ -694,6 +783,9 @@ def gen_html(results, scan_time):
         <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">融資週增減(張) ↕</th>
         <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張大戶比 ↕</th>
         <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=大戶加碼，負值綠=大戶減倉">千張週增減 ↕</th>
+        <th onclick="sortTable(12)" title="前高至收盤的加權成交量（萬張），代表上方套牢壓力">壓力量(萬張) ↕</th>
+        <th onclick="sortTable(13)" title="收盤至(收盤-D)的加權成交量（萬張），代表下方支撐籌碼">支撐量(萬張) ↕</th>
+        <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓比值 ↕</th>
       </tr>
     </thead>
     <tbody>
