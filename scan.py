@@ -1,12 +1,13 @@
 """
-台股週K線過濾工具 v3
+台股週K線過濾工具 v4
 條件：
   1. 週 MA20 向上
   2. 過去 N 週內曾有大正乖離
   3. 目前股價已修正到 MA20 附近
 
 圖表：週K線 + 布林通道（Bollinger Bands）+ 成交量
-資料來源：TWSE 上市股票清單 + Yahoo Finance 週K線
+附加：三大法人週買賣超（大戶）+ 融資餘額週增減（散戶）
+資料來源：TWSE + Yahoo Finance
 """
 
 import yfinance as yf
@@ -15,7 +16,8 @@ import requests
 import sys
 import os
 import json
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 
 # ── 參數設定 ──────────────────────────────────────────────────────────────────
 LOOKBACK_WEEKS    = 16    # 往回看幾週判斷「曾有大正乖離」
@@ -180,7 +182,138 @@ def scan_stocks(stocks, batch_size=150):
 
     return results
 
-# ── 4. 產生 HTML ──────────────────────────────────────────────────────────────
+# ── 4. 取得近期有資料的交易日清單 ─────────────────────────────────────────────
+def get_trading_days(n=10):
+    """找最近 n 個有三大法人資料的交易日"""
+    headers = {"User-Agent": "Mozilla/5.0"}
+    days = []
+    d = datetime.now() - timedelta(days=1)
+    while len(days) < n:
+        if d.weekday() < 5:
+            date_str = d.strftime("%Y%m%d")
+            try:
+                r = requests.get(
+                    "https://www.twse.com.tw/rwd/zh/fund/T86",
+                    params={"response": "json", "date": date_str, "selectType": "ALL"},
+                    headers=headers, timeout=10
+                )
+                if r.json().get("total", 0) > 0:
+                    days.append(date_str)
+            except Exception:
+                pass
+        d -= timedelta(days=1)
+    return days  # 由新到舊
+
+# ── 5. 三大法人週買賣超（大戶）─────────────────────────────────────────────────
+def fetch_institutional_weekly(trading_days):
+    """
+    取最近兩週共 10 個交易日的 T86 資料
+    回傳 dict: code -> {"this_week": 本週合計萬股, "prev_week": 上週合計萬股}
+    """
+    headers = {"User-Agent": "Mozilla/5.0"}
+    this_week_days = trading_days[:5]   # 最新 5 天
+    prev_week_days = trading_days[5:10] # 前一週 5 天
+
+    def sum_week(days):
+        totals = {}
+        for date_str in days:
+            try:
+                r = requests.get(
+                    "https://www.twse.com.tw/rwd/zh/fund/T86",
+                    params={"response": "json", "date": date_str, "selectType": "ALL"},
+                    headers=headers, timeout=10
+                )
+                data = r.json()
+                for row in data.get("data", []):
+                    code = row[0]
+                    try:
+                        net = int(row[18].replace(",", "").replace(" ", ""))
+                        totals[code] = totals.get(code, 0) + net
+                    except Exception:
+                        pass
+                time.sleep(0.3)
+            except Exception:
+                pass
+        return totals
+
+    print("   抓三大法人本週資料…", flush=True)
+    this_w = sum_week(this_week_days)
+    print("   抓三大法人上週資料…", flush=True)
+    prev_w = sum_week(prev_week_days)
+
+    result = {}
+    all_codes = set(this_w) | set(prev_w)
+    for code in all_codes:
+        result[code] = {
+            "this_week": round(this_w.get(code, 0) / 10000, 1),   # 萬股
+            "prev_week": round(prev_w.get(code, 0) / 10000, 1),
+        }
+    return result
+
+# ── 6. 融資餘額週增減（散戶代理指標）─────────────────────────────────────────
+MARGIN_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "margin_cache.json")
+
+def fetch_margin_current():
+    """從 TWSE openapi 取得當日融資餘額（含前日）"""
+    headers = {"User-Agent": "Mozilla/5.0"}
+    try:
+        r = requests.get(
+            "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGN",
+            headers=headers, timeout=15
+        )
+        data = r.json()
+        result = {}
+        for item in data:
+            code = item.get("股票代號", "")
+            if code.isdigit() and len(code) == 4:
+                try:
+                    result[code] = int(item.get("融資今日餘額", "0").replace(",", "") or "0")
+                except Exception:
+                    result[code] = 0
+        return result
+    except Exception as e:
+        print(f"   ⚠ 融資資料抓取失敗：{e}", flush=True)
+        return {}
+
+def get_margin_weekly_change():
+    """
+    比對本次與上次快取的融資餘額
+    回傳 dict: code -> 週增減（張，= 本週餘額 - 上週餘額）
+    """
+    # 讀上次快取
+    prev_margin = {}
+    if os.path.exists(MARGIN_CACHE_PATH):
+        try:
+            with open(MARGIN_CACHE_PATH, "r", encoding="utf-8") as f:
+                prev_margin = json.load(f)
+        except Exception:
+            pass
+
+    print("   抓融資餘額資料…", flush=True)
+    curr_margin = fetch_margin_current()
+
+    # 計算週增減（單位：張）
+    weekly_chg = {}
+    if prev_margin:
+        for code in curr_margin:
+            curr = curr_margin.get(code, 0)
+            prev = prev_margin.get(code, curr)  # 若上週無資料則視為 0 增減
+            weekly_chg[code] = curr - prev
+    else:
+        # 第一次執行，沒有歷史資料
+        for code in curr_margin:
+            weekly_chg[code] = None  # None = 無法計算
+
+    # 儲存本次快取（供下週比對）
+    try:
+        with open(MARGIN_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(curr_margin, f, ensure_ascii=False)
+    except Exception as e:
+        print(f"   ⚠ 快取儲存失敗：{e}", flush=True)
+
+    return weekly_chg
+
+# ── 7. 產生 HTML ──────────────────────────────────────────────────────────────
 def gen_html(results, scan_time):
     results.sort(key=lambda x: abs(x["current_dev"]))
 
@@ -194,6 +327,24 @@ def gen_html(results, scan_time):
         dev_str   = f"{r['current_dev']:+.2f}%"
         peak_str  = f"{r['peak_dev']:+.2f}%"
         slope_str = f"{'▲' if r['ma20_slope_pct'] > 0 else '▼'} {r['ma20_slope_pct']:.2f}%"
+
+        # 三大法人週買賣超（大戶）
+        inst = r.get("institutional") or {}
+        tw = inst.get("this_week")
+        if tw is not None:
+            inst_color = "pos-red" if tw > 0 else ("neg-green" if tw < 0 else "neutral")
+            inst_str   = f"{tw:+,.1f}"
+        else:
+            inst_color, inst_str = "neutral", "—"
+
+        # 融資週增減（散戶）
+        mc = r.get("margin_chg")
+        if mc is None:
+            margin_color, margin_str = "neutral", "初次"
+        else:
+            margin_color = "neg-green" if mc > 0 else ("pos-red" if mc < 0 else "neutral")
+            margin_str   = f"{mc:+,}"
+
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
@@ -204,6 +355,8 @@ def gen_html(results, scan_time):
           <td class="num peak">{peak_str}</td>
           <td class="num">{r['weeks_since_peak']} 週前</td>
           <td class="num up">{slope_str}</td>
+          <td class="num {inst_color}">{inst_str}</td>
+          <td class="num {margin_color}">{margin_str}</td>
         </tr>"""
 
     html = f"""<!DOCTYPE html>
@@ -270,10 +423,13 @@ def gen_html(results, scan_time):
     td {{ padding: 10px 16px; white-space: nowrap; }}
     .code {{ color: #fb923c; font-weight: 600; font-family: monospace; font-size: 0.95rem; }}
     .num       {{ text-align: right; }}
-    .pos-green {{ color: #34d399; }}
-    .neg-red   {{ color: #f87171; }}
-    .peak      {{ color: #fb923c; }}
-    .up        {{ color: #3b82f6; }}
+    .pos-green  {{ color: #34d399; }}
+    .neg-red    {{ color: #f87171; }}
+    .pos-red    {{ color: #f87171; }}
+    .neg-green  {{ color: #34d399; }}
+    .neutral    {{ color: #94a3b8; }}
+    .peak       {{ color: #fb923c; }}
+    .up         {{ color: #3b82f6; }}
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {{
@@ -393,7 +549,9 @@ def gen_html(results, scan_time):
   ① <strong>週 MA20 向上（Moving Average 20-week）</strong>：當前 MA20 高於 {MA20_SLOPE_WEEKS} 週前的 MA20，確認均線處於上升趨勢<br>
   ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 {LOOKBACK_WEEKS} 週內，收盤價曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}% 以上</strong><br>
   ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>{int(NEAR_MA20_MIN*100)}% 至 +{int(NEAR_MA20_MAX*100)}%</strong><br>
-  📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong>
+  📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong><br>
+  👥 <strong>大戶週買賣（萬股）</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
+  💳 <strong>散戶融資週增減（張）</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）
 </div>
 
 <div class="params">
@@ -420,6 +578,8 @@ def gen_html(results, scan_time):
         <th onclick="sortTable(5)">高峰正乖離 ↕</th>
         <th onclick="sortTable(6)">距高點 ↕</th>
         <th onclick="sortTable(7)">MA20斜率 ↕</th>
+        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">大戶週買賣(萬股) ↕</th>
+        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">散戶融資週增減(張) ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -617,17 +777,36 @@ document.addEventListener("keydown", e => {{ if (e.key === "Escape") closeModal(
 # ── 主程式 ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 60, flush=True)
-    print("  台股週K MA20 掃描工具 v3（布林通道版）", flush=True)
+    print("  台股週K MA20 掃描工具 v4（大戶散戶週變化版）", flush=True)
     print("=" * 60, flush=True)
 
+    # ① 取得上市股票清單
     stocks = get_twse_stock_list()
     if not stocks:
         print("無法取得股票清單，請確認網路連線後重試")
         sys.exit(1)
 
+    # ② 掃描週K線篩選
     print(f"開始掃描（共 {len(stocks)} 檔）...", flush=True)
     results = scan_stocks(stocks, batch_size=150)
+    print(f"初步篩選：{len(results)} 檔符合條件", flush=True)
 
+    # ③ 取得三大法人週資料（大戶）
+    print("取得大戶/散戶週變化資料...", flush=True)
+    trading_days = get_trading_days(n=10)
+    print(f"   交易日：{trading_days}", flush=True)
+    institutional = fetch_institutional_weekly(trading_days)
+
+    # ④ 取得融資週增減（散戶）
+    margin_weekly = get_margin_weekly_change()
+
+    # ⑤ 合併到 results
+    for r in results:
+        code = r["code"]
+        r["institutional"] = institutional.get(code)
+        r["margin_chg"]    = margin_weekly.get(code)
+
+    # ⑥ 產生 HTML
     scan_time = datetime.now().strftime("%Y-%m-%d %H:%M")
     html = gen_html(results, scan_time)
 
@@ -635,5 +814,4 @@ if __name__ == "__main__":
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print(f"掃描完成！共找到 {len(results)} 檔符合條件的股票", flush=True)
-    print(f"輸出：{out_path}", flush=True)
+    print(f"完成！共 {len(results)} 檔，輸出：{out_path}", flush=True)
