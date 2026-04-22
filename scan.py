@@ -578,8 +578,8 @@ def gen_html(results, scan_time):
         <th onclick="sortTable(5)">高峰正乖離 ↕</th>
         <th onclick="sortTable(6)">距高點 ↕</th>
         <th onclick="sortTable(7)">MA20斜率 ↕</th>
-        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">大戶週買賣(萬股) ↕</th>
-        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">散戶融資週增減(張) ↕</th>
+        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人(萬股) ↕</th>
+        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">融資週增減(張) ↕</th>
       </tr>
     </thead>
     <tbody>
