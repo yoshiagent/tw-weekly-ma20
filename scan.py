@@ -771,21 +771,21 @@ def gen_html(results, scan_time):
   <table id="mainTable">
     <thead>
       <tr>
-        <th onclick="sortTable(0)">股票代碼 ↕</th>
+        <th onclick="sortTable(0)">代碼 ↕</th>
         <th onclick="sortTable(1)">名稱 ↕</th>
-        <th onclick="sortTable(2)">收盤價 ↕</th>
-        <th onclick="sortTable(3)">週MA20 ↕</th>
-        <th onclick="sortTable(4)">目前乖離 ↕</th>
-        <th onclick="sortTable(5)">高峰正乖離 ↕</th>
-        <th onclick="sortTable(6)">距高點 ↕</th>
-        <th onclick="sortTable(7)">MA20斜率 ↕</th>
-        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人(萬股) ↕</th>
-        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少(健康) 紅=增加(注意)">融資週增減(張) ↕</th>
-        <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張大戶比 ↕</th>
-        <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=大戶加碼，負值綠=大戶減倉">千張週增減 ↕</th>
-        <th onclick="sortTable(12)" title="前高至收盤的加權成交量（萬張），代表上方套牢壓力">壓力量(萬張) ↕</th>
-        <th onclick="sortTable(13)" title="收盤至(收盤-D)的加權成交量（萬張），代表下方支撐籌碼">支撐量(萬張) ↕</th>
-        <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓比值 ↕</th>
+        <th onclick="sortTable(2)">收盤 ↕</th>
+        <th onclick="sortTable(3)">MA20 ↕</th>
+        <th onclick="sortTable(4)" title="目前收盤與週MA20的乖離率">乖離 ↕</th>
+        <th onclick="sortTable(5)" title="回看期間內最大正乖離">峰乖離 ↕</th>
+        <th onclick="sortTable(6)" title="距離峰值已過幾週">距峰 ↕</th>
+        <th onclick="sortTable(7)" title="MA20與4週前相比的斜率">斜率 ↕</th>
+        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人 ↕</th>
+        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少 紅=增加">融資 ↕</th>
+        <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張比 ↕</th>
+        <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=加碼，負值綠=減倉">千張變 ↕</th>
+        <th onclick="sortTable(12)" title="前高至收盤區間的加權成交量（萬張），代表上方套牢壓力">壓力 ↕</th>
+        <th onclick="sortTable(13)" title="收盤至(收盤-D)等寬區間的加權成交量（萬張），代表下方支撐籌碼">支撐 ↕</th>
+        <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓 ↕</th>
       </tr>
     </thead>
     <tbody>
