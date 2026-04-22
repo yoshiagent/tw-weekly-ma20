@@ -980,6 +980,126 @@ document.addEventListener("keydown", e => {{ if (e.key === "Escape") closeModal(
 """
     return html
 
+# ── 10. 匯出 Excel ────────────────────────────────────────────────────────────
+def save_excel(results, scan_time):
+    """將掃描結果存成 Excel，檔名含日期，存於 scan.py 同目錄。"""
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        print("   ⚠ openpyxl 未安裝，跳過 Excel 輸出（pip install openpyxl）", flush=True)
+        return
+
+    # ── 組成 DataFrame ──────────────────────────────────────────────────────
+    rows = []
+    for r in results:
+        inst  = r.get("institutional") or {}
+        tdcc  = r.get("tdcc")         or {}
+        mc    = r.get("margin_chg")
+        rv    = r.get("resist_vol",  0)
+        sv    = r.get("support_vol", 0)
+        vr    = r.get("vol_ratio")
+
+        rows.append({
+            "代碼":        r["code"],
+            "名稱":        r["name"],
+            "收盤":        r["close"],
+            "MA20":        r["ma20"],
+            "乖離%":       r["current_dev"],
+            "峰乖離%":     r["peak_dev"],
+            "距峰(週)":    r["weeks_since_peak"],
+            "斜率%":       r["ma20_slope_pct"],
+            "法人(萬股)":  inst.get("this_week"),
+            "融資增減(張)": mc,
+            "千張比%":     tdcc.get("pct"),
+            "千張週變%":   tdcc.get("chg"),
+            "壓力(萬張)":  round(rv / 1e7, 2) if rv else None,
+            "支撐(萬張)":  round(sv / 1e7, 2) if sv else None,
+            "支/壓":       vr,
+        })
+
+    df = pd.DataFrame(rows)
+
+    # ── 寫入 Excel ──────────────────────────────────────────────────────────
+    date_str  = datetime.now().strftime("%Y%m%d")
+    base_dir  = os.path.dirname(os.path.abspath(__file__))
+    xl_path   = os.path.join(base_dir, f"台股MA20掃描_{date_str}.xlsx")
+
+    with pd.ExcelWriter(xl_path, engine="openpyxl") as writer:
+        df.to_excel(writer, sheet_name="MA20掃描結果", index=False, startrow=1)
+        ws = writer.sheets["MA20掃描結果"]
+
+        # ── 第 1 列：掃描時間說明 ───────────────────────────────────────────
+        ws["A1"] = f"台股週K MA20 掃描結果　掃描時間：{scan_time}"
+        ws["A1"].font      = Font(bold=True, color="FFFFFF", size=11)
+        ws["A1"].fill      = PatternFill("solid", fgColor="1E3A5F")
+        ws["A1"].alignment = Alignment(horizontal="left", vertical="center")
+        ws.merge_cells(f"A1:{get_column_letter(len(df.columns))}1")
+        ws.row_dimensions[1].height = 22
+
+        # ── 第 2 列：欄位標題樣式 ───────────────────────────────────────────
+        hdr_fill = PatternFill("solid", fgColor="0F2040")
+        hdr_font = Font(bold=True, color="93C5FD", size=10)
+        thin     = Side(style="thin", color="2D3F55")
+        border   = Border(bottom=Side(style="medium", color="3B82F6"))
+
+        for col_idx, col_name in enumerate(df.columns, start=1):
+            cell = ws.cell(row=2, column=col_idx)
+            cell.fill      = hdr_fill
+            cell.font      = hdr_font
+            cell.border    = border
+            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        ws.row_dimensions[2].height = 28
+
+        # ── 資料列樣式 ─────────────────────────────────────────────────────
+        fill_odd  = PatternFill("solid", fgColor="0D1826")
+        fill_even = PatternFill("solid", fgColor="111F30")
+        font_data = Font(color="E2E8F0", size=10)
+        font_code = Font(color="FB923C", bold=True, size=10)
+
+        # 數值欄索引（0-based）：乖離%以後都是數字
+        num_cols = set(range(2, len(df.columns)))
+
+        for row_idx in range(3, 3 + len(df)):
+            fill = fill_odd if (row_idx % 2 == 1) else fill_even
+            for col_idx in range(1, len(df.columns) + 1):
+                cell = ws.cell(row=row_idx, column=col_idx)
+                cell.fill      = fill
+                cell.font      = font_code if col_idx == 1 else font_data
+                cell.alignment = Alignment(
+                    horizontal="right" if col_idx > 2 else "center",
+                    vertical="center"
+                )
+                # 數值格式
+                if col_idx in {3, 4}:                    # 收盤、MA20
+                    cell.number_format = "#,##0.00"
+                elif col_idx in {5, 6, 8, 11, 12}:      # 百分比欄
+                    cell.number_format = "+0.00;-0.00;0.00"
+                elif col_idx in {9, 10}:                 # 法人、融資
+                    cell.number_format = "+#,##0.0;-#,##0.0;0"
+                elif col_idx in {13, 14}:                # 壓力、支撐
+                    cell.number_format = "#,##0.00"
+                elif col_idx == 15:                      # 支/壓比值
+                    cell.number_format = "0.00"
+
+        # ── 凍結前兩欄（代碼、名稱） ───────────────────────────────────────
+        ws.freeze_panes = "C3"
+
+        # ── 自動調整欄寬 ───────────────────────────────────────────────────
+        col_widths = {
+            "代碼": 7, "名稱": 10, "收盤": 8, "MA20": 8,
+            "乖離%": 7, "峰乖離%": 8, "距峰(週)": 8, "斜率%": 7,
+            "法人(萬股)": 10, "融資增減(張)": 11,
+            "千張比%": 8, "千張週變%": 8,
+            "壓力(萬張)": 9, "支撐(萬張)": 9, "支/壓": 7,
+        }
+        for col_idx, col_name in enumerate(df.columns, start=1):
+            ws.column_dimensions[get_column_letter(col_idx)].width = col_widths.get(col_name, 10)
+
+    print(f"   Excel 已存：{xl_path}", flush=True)
+    return xl_path
+
 # ── 主程式 ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 60, flush=True)
@@ -1023,5 +1143,10 @@ if __name__ == "__main__":
     out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
+    print(f"HTML 輸出：{out_path}", flush=True)
 
-    print(f"完成！共 {len(results)} 檔，輸出：{out_path}", flush=True)
+    # ⑧ 匯出 Excel（本機留存）
+    print("匯出 Excel...", flush=True)
+    save_excel(results, scan_time)
+
+    print(f"完成！共 {len(results)} 檔。", flush=True)
