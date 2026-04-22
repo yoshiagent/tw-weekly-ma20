@@ -460,7 +460,7 @@ def get_tdcc_weekly_change():
 
 # ── 9. 產生 HTML ──────────────────────────────────────────────────────────────
 def gen_html(results, scan_time):
-    results.sort(key=lambda x: abs(x["current_dev"]))
+    results.sort(key=lambda x: x.get("vol_shrink_ratio") or 999)
 
     # 把圖表資料分離，只把 code→chart 的映射嵌入 JS
     chart_data_map = {r["code"]: r["chart"] for r in results}
