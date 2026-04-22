@@ -1086,6 +1086,10 @@ def save_excel(results, scan_time):
         # ── 凍結前兩欄（代碼、名稱） ───────────────────────────────────────
         ws.freeze_panes = "C3"
 
+        # ── 自動篩選（排序＋篩選下拉） ─────────────────────────────────────
+        last_col = get_column_letter(len(df.columns))
+        ws.auto_filter.ref = f"A2:{last_col}2"
+
         # ── 自動調整欄寬 ───────────────────────────────────────────────────
         col_widths = {
             "代碼": 7, "名稱": 10, "收盤": 8, "MA20": 8,
