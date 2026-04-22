@@ -119,6 +119,10 @@ def scan_stocks(stocks, batch_size=150):
                 if not (NEAR_MA20_MIN <= current_dev <= NEAR_MA20_MAX):
                     continue
 
+                # 條件 4：收盤價 >= 50
+                if last_close < 50:
+                    continue
+
                 ma20_slope_pct   = (last_ma20 - old_ma20) / old_ma20 * 100
                 peak_idx         = int(dev_series.argmax())
                 weeks_since_peak = LOOKBACK_WEEKS - 1 - peak_idx
