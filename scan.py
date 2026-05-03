@@ -775,6 +775,20 @@ def gen_html(results, scan_time, local_dir=""):
     }}
     .modal-close:hover {{ color: #e2e8f0; background: #1e2d40; }}
 
+    .ohlcv-bar {{
+      display: flex; gap: 18px; flex-wrap: wrap;
+      padding: 5px 20px 6px;
+      border-bottom: 1px solid #1a2d42;
+      background: #0a1520;
+      font-size: 0.8rem; font-family: monospace;
+      flex-shrink: 0;
+    }}
+    .ohlcv-lbl {{ color: #4a6080; margin-right: 3px; }}
+    .ohlcv-up  {{ color: #f87171; font-weight: 600; }}
+    .ohlcv-dn  {{ color: #34d399; font-weight: 600; }}
+    .ohlcv-vol {{ color: #7dd3fc; font-weight: 600; }}
+    .ohlcv-date {{ color: #64748b; font-size: 0.75rem; align-self: center; }}
+
     .chart-area {{
       padding: 0 4px 4px;
       flex: 1;
@@ -903,6 +917,14 @@ def gen_html(results, scan_time, local_dir=""):
         <div class="legend-item"><div class="legend-dot" style="background:#a78bfa; opacity:.8"></div>BB 下軌</div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="ohlcv-bar">
+      <span class="ohlcv-date" id="ohlcvDate">—</span>
+      <span><span class="ohlcv-lbl">開</span><span id="oVal">—</span></span>
+      <span><span class="ohlcv-lbl">高</span><span id="hVal">—</span></span>
+      <span><span class="ohlcv-lbl">低</span><span id="lVal">—</span></span>
+      <span><span class="ohlcv-lbl">收</span><span id="cVal">—</span></span>
+      <span><span class="ohlcv-lbl">量</span><span id="vVal" class="ohlcv-vol">—</span></span>
     </div>
     <div class="chart-area">
       <div id="main-chart"></div>
@@ -1040,10 +1062,49 @@ function openChart(code, name) {{
   volSeries.setData(data.volume);
   volChart.timeScale().fitContent();
 
-  // 同步十字線
+  // ── OHLCV Bar 更新函數 ───────────────────────────────────
+  function fmtVol(v) {{
+    if (!v) return "—";
+    if (v >= 1e8) return (v / 1e8).toFixed(2) + " 億";
+    if (v >= 1e4) return (v / 1e3).toFixed(0) + " 千";
+    return v.toLocaleString();
+  }}
+  function updateOhlcv(candle, vol) {{
+    if (!candle) return;
+    const isUp  = candle.close >= candle.open;
+    const upCls = isUp ? "ohlcv-up" : "ohlcv-dn";
+    const dnCls = "ohlcv-dn";
+    const hiCls = "ohlcv-up";
+    document.getElementById("ohlcvDate").textContent = candle.time || "";
+    document.getElementById("oVal").className = upCls;
+    document.getElementById("oVal").textContent = candle.open;
+    document.getElementById("hVal").className = hiCls;
+    document.getElementById("hVal").textContent = candle.high;
+    document.getElementById("lVal").className = dnCls;
+    document.getElementById("lVal").textContent = candle.low;
+    document.getElementById("cVal").className = upCls;
+    document.getElementById("cVal").textContent = candle.close;
+    document.getElementById("vVal").textContent = vol ? fmtVol(vol.value) : "—";
+  }}
+  // 預設顯示最後一根 K 棒
+  if (data.candles.length) {{
+    updateOhlcv(data.candles[data.candles.length - 1],
+                data.volume[data.volume.length - 1]);
+  }}
+
+  // 同步十字線 + 更新 OHLCV Bar
   mainChart.subscribeCrosshairMove(param => {{
-    if (param.time) volChart.setCrosshairPosition(0, param.time, volSeries);
-    else volChart.clearCrosshairPosition();
+    if (param.time) {{
+      volChart.setCrosshairPosition(0, param.time, volSeries);
+      const candle = data.candles.find(c => c.time === param.time);
+      const vol    = data.volume.find(v => v.time === param.time);
+      updateOhlcv(candle, vol);
+    }} else {{
+      volChart.clearCrosshairPosition();
+      if (data.candles.length)
+        updateOhlcv(data.candles[data.candles.length - 1],
+                    data.volume[data.volume.length - 1]);
+    }}
   }});
   volChart.subscribeCrosshairMove(param => {{
     if (param.time) mainChart.setCrosshairPosition(0, param.time, candleSeries);

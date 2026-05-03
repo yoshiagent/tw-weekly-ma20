@@ -155,6 +155,20 @@
     }
     .modal-close:hover { color: #e2e8f0; background: #1e2d40; }
 
+    .ohlcv-bar {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      padding: 5px 20px 6px;
+      border-bottom: 1px solid #1a2d42;
+      background: #0a1520;
+      font-size: 0.8rem; font-family: monospace;
+      flex-shrink: 0;
+    }
+    .ohlcv-lbl { color: #4a6080; margin-right: 3px; }
+    .ohlcv-up  { color: #f87171; font-weight: 600; }
+    .ohlcv-dn  { color: #34d399; font-weight: 600; }
+    .ohlcv-vol { color: #7dd3fc; font-weight: 600; }
+    .ohlcv-date { color: #64748b; font-size: 0.75rem; align-self: center; }
+
     .chart-area {
       padding: 0 4px 4px;
       flex: 1;
@@ -190,7 +204,7 @@
 <div class="stats">
   <div class="stat-card" style="border-color: rgba(59,130,246,0.5);">
     <div class="stat-label">最後更新</div>
-    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-05-03 19:16</div>
+    <div class="stat-value" style="font-size:0.95rem; color:#60a5fa; padding-top:4px; letter-spacing:0.02em;">2026-05-03 19:25</div>
   </div>
   <div class="stat-card">
     <div class="stat-label">符合條件股票</div>
@@ -278,7 +292,7 @@
           <td class="num peak">+22.29%</td>
           <td class="num">6 週前</td>
           <td class="num up">▲ 2.94%</td>
-          <td class="num neg-green">-4.2</td>
+          <td class="num neg-green">-4.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">61.35%</td>
           <td class="num neutral">0.00%</td>
@@ -297,7 +311,7 @@
           <td class="num peak">+15.04%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 3.23%</td>
-          <td class="num neg-green">-31.9</td>
+          <td class="num neg-green">-118.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">35.76%</td>
           <td class="num neutral">0.00%</td>
@@ -316,7 +330,7 @@
           <td class="num peak">+30.58%</td>
           <td class="num">6 週前</td>
           <td class="num up">▲ 2.19%</td>
-          <td class="num neg-green">-3.9</td>
+          <td class="num pos-red">+3.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">35.27%</td>
           <td class="num neutral">0.00%</td>
@@ -335,7 +349,7 @@
           <td class="num peak">+15.54%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 2.41%</td>
-          <td class="num neg-green">-21.1</td>
+          <td class="num neg-green">-74.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">56.33%</td>
           <td class="num neutral">0.00%</td>
@@ -354,7 +368,7 @@
           <td class="num peak">+16.62%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 1.75%</td>
-          <td class="num pos-red">+9.9</td>
+          <td class="num neg-green">-66.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">79.07%</td>
           <td class="num neutral">0.00%</td>
@@ -373,7 +387,7 @@
           <td class="num peak">+16.93%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 4.96%</td>
-          <td class="num neg-green">-90.0</td>
+          <td class="num neg-green">-342.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">29.42%</td>
           <td class="num neutral">0.00%</td>
@@ -392,7 +406,7 @@
           <td class="num peak">+44.71%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 3.18%</td>
-          <td class="num pos-red">+73.8</td>
+          <td class="num pos-red">+63.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">68.81%</td>
           <td class="num neutral">0.00%</td>
@@ -411,7 +425,7 @@
           <td class="num peak">+19.84%</td>
           <td class="num">15 週前</td>
           <td class="num up">▲ 3.04%</td>
-          <td class="num neg-green">-7.9</td>
+          <td class="num neg-green">-0.3</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">43.89%</td>
           <td class="num neutral">0.00%</td>
@@ -430,7 +444,7 @@
           <td class="num peak">+45.80%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 4.80%</td>
-          <td class="num pos-red">+28.5</td>
+          <td class="num pos-red">+78.6</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">41.02%</td>
           <td class="num neutral">0.00%</td>
@@ -449,7 +463,7 @@
           <td class="num peak">+31.83%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 2.32%</td>
-          <td class="num neg-green">-99.5</td>
+          <td class="num neg-green">-307.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">55.45%</td>
           <td class="num neutral">0.00%</td>
@@ -468,7 +482,7 @@
           <td class="num peak">+25.55%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 4.59%</td>
-          <td class="num pos-red">+5.6</td>
+          <td class="num neg-green">-32.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">52.98%</td>
           <td class="num neutral">0.00%</td>
@@ -487,7 +501,7 @@
           <td class="num peak">+15.78%</td>
           <td class="num">15 週前</td>
           <td class="num up">▲ 1.96%</td>
-          <td class="num neg-green">-465.6</td>
+          <td class="num neg-green">-545.1</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">54.85%</td>
           <td class="num neutral">0.00%</td>
@@ -506,7 +520,7 @@
           <td class="num peak">+16.04%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 1.78%</td>
-          <td class="num neg-green">-19.0</td>
+          <td class="num neg-green">-78.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">27.42%</td>
           <td class="num neutral">0.00%</td>
@@ -525,7 +539,7 @@
           <td class="num peak">+24.93%</td>
           <td class="num">15 週前</td>
           <td class="num up">▲ 3.28%</td>
-          <td class="num neg-green">-457.7</td>
+          <td class="num neg-green">-918.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">52.07%</td>
           <td class="num neutral">0.00%</td>
@@ -544,7 +558,7 @@
           <td class="num peak">+20.71%</td>
           <td class="num">4 週前</td>
           <td class="num up">▲ 2.22%</td>
-          <td class="num pos-red">+3.8</td>
+          <td class="num neg-green">-1.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">48.14%</td>
           <td class="num neutral">0.00%</td>
@@ -563,7 +577,7 @@
           <td class="num peak">+28.04%</td>
           <td class="num">14 週前</td>
           <td class="num up">▲ 0.55%</td>
-          <td class="num neg-green">-112.7</td>
+          <td class="num neg-green">-186.9</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.33%</td>
           <td class="num neutral">0.00%</td>
@@ -582,7 +596,7 @@
           <td class="num peak">+24.31%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 3.19%</td>
-          <td class="num neg-green">-39.2</td>
+          <td class="num neg-green">-221.8</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">37.38%</td>
           <td class="num neutral">0.00%</td>
@@ -601,7 +615,7 @@
           <td class="num peak">+26.42%</td>
           <td class="num">13 週前</td>
           <td class="num up">▲ 3.10%</td>
-          <td class="num neg-green">-897.9</td>
+          <td class="num neg-green">-1,432.0</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">42.34%</td>
           <td class="num neutral">0.00%</td>
@@ -620,7 +634,7 @@
           <td class="num peak">+17.38%</td>
           <td class="num">9 週前</td>
           <td class="num up">▲ 3.43%</td>
-          <td class="num neg-green">-1,571.8</td>
+          <td class="num neg-green">-3,254.5</td>
           <td class="num neutral">+0</td>
           <td class="num neutral">78.60%</td>
           <td class="num neutral">0.00%</td>
@@ -644,6 +658,14 @@
         <div class="legend-item"><div class="legend-dot" style="background:#a78bfa; opacity:.8"></div>BB 下軌</div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="ohlcv-bar">
+      <span class="ohlcv-date" id="ohlcvDate">—</span>
+      <span><span class="ohlcv-lbl">開</span><span id="oVal">—</span></span>
+      <span><span class="ohlcv-lbl">高</span><span id="hVal">—</span></span>
+      <span><span class="ohlcv-lbl">低</span><span id="lVal">—</span></span>
+      <span><span class="ohlcv-lbl">收</span><span id="cVal">—</span></span>
+      <span><span class="ohlcv-lbl">量</span><span id="vVal" class="ohlcv-vol">—</span></span>
     </div>
     <div class="chart-area">
       <div id="main-chart"></div>
@@ -781,10 +803,49 @@ function openChart(code, name) {
   volSeries.setData(data.volume);
   volChart.timeScale().fitContent();
 
-  // 同步十字線
+  // ── OHLCV Bar 更新函數 ───────────────────────────────────
+  function fmtVol(v) {
+    if (!v) return "—";
+    if (v >= 1e8) return (v / 1e8).toFixed(2) + " 億";
+    if (v >= 1e4) return (v / 1e3).toFixed(0) + " 千";
+    return v.toLocaleString();
+  }
+  function updateOhlcv(candle, vol) {
+    if (!candle) return;
+    const isUp  = candle.close >= candle.open;
+    const upCls = isUp ? "ohlcv-up" : "ohlcv-dn";
+    const dnCls = "ohlcv-dn";
+    const hiCls = "ohlcv-up";
+    document.getElementById("ohlcvDate").textContent = candle.time || "";
+    document.getElementById("oVal").className = upCls;
+    document.getElementById("oVal").textContent = candle.open;
+    document.getElementById("hVal").className = hiCls;
+    document.getElementById("hVal").textContent = candle.high;
+    document.getElementById("lVal").className = dnCls;
+    document.getElementById("lVal").textContent = candle.low;
+    document.getElementById("cVal").className = upCls;
+    document.getElementById("cVal").textContent = candle.close;
+    document.getElementById("vVal").textContent = vol ? fmtVol(vol.value) : "—";
+  }
+  // 預設顯示最後一根 K 棒
+  if (data.candles.length) {
+    updateOhlcv(data.candles[data.candles.length - 1],
+                data.volume[data.volume.length - 1]);
+  }
+
+  // 同步十字線 + 更新 OHLCV Bar
   mainChart.subscribeCrosshairMove(param => {
-    if (param.time) volChart.setCrosshairPosition(0, param.time, volSeries);
-    else volChart.clearCrosshairPosition();
+    if (param.time) {
+      volChart.setCrosshairPosition(0, param.time, volSeries);
+      const candle = data.candles.find(c => c.time === param.time);
+      const vol    = data.volume.find(v => v.time === param.time);
+      updateOhlcv(candle, vol);
+    } else {
+      volChart.clearCrosshairPosition();
+      if (data.candles.length)
+        updateOhlcv(data.candles[data.candles.length - 1],
+                    data.volume[data.volume.length - 1]);
+    }
   });
   volChart.subscribeCrosshairMove(param => {
     if (param.time) mainChart.setCrosshairPosition(0, param.time, candleSeries);
