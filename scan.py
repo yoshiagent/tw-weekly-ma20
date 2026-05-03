@@ -29,24 +29,55 @@ MA20_SLOPE_WEEKS  = 4     # MA20 斜率計算週數
 CHART_WEEKS       = 60    # 圖表顯示週數
 BB_STD            = 2     # 布林通道標準差倍數
 
-# ── 1. 取得台股上市清單 ───────────────────────────────────────────────────────
+# ── 1. 取得台股上市清單（含產業別）──────────────────────────────────────────
+INDUSTRY_MAP = {
+    "01": "水泥", "02": "食品", "03": "塑膠", "04": "紡織",
+    "05": "電機", "06": "電纜", "08": "玻璃", "09": "造紙",
+    "10": "鋼鐵", "11": "橡膠", "12": "汽車", "14": "建材",
+    "15": "航運", "16": "觀光", "17": "金融", "18": "貿易",
+    "20": "其他", "21": "化學", "22": "生技醫療", "23": "油電燃氣",
+    "24": "半導體", "25": "電腦週邊", "26": "光電", "27": "通信網路",
+    "28": "電子零組件", "29": "電子通路", "30": "資訊服務", "31": "其他電子",
+    "35": "綠能環保", "36": "數位雲端", "37": "運動休閒", "38": "居家生活",
+    "91": "存託憑證",
+}
+
 def get_twse_stock_list():
     print("取得台股上市清單...", flush=True)
-    url = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
+    headers = {"User-Agent": "Mozilla/5.0"}
+
+    # 基本行情（代碼 + 名稱）
     try:
-        r = requests.get(url, timeout=30)
-        data = r.json()
-        stocks = []
-        for item in data:
-            code = item.get("Code", "")
-            name = item.get("Name", "")
-            if code.isdigit() and len(code) == 4:
-                stocks.append({"code": code, "name": name})
-        print(f"   共 {len(stocks)} 檔上市股票", flush=True)
-        return stocks
+        r = requests.get(
+            "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+            headers=headers, timeout=30)
+        day_data = {d["Code"]: d["Name"] for d in r.json()
+                    if d.get("Code","").isdigit() and len(d["Code"]) == 4}
     except Exception as e:
         print(f"   無法取得清單：{e}", flush=True)
         return []
+
+    # 公司基本資料（產業別）
+    industry_map = {}
+    try:
+        r2 = requests.get(
+            "https://openapi.twse.com.tw/v1/opendata/t187ap03_L",
+            headers=headers, timeout=30)
+        for d in r2.json():
+            code = d.get("公司代號", "").strip()
+            ind  = d.get("產業別", "").strip()
+            if code and ind:
+                industry_map[code] = INDUSTRY_MAP.get(ind, ind)
+    except Exception as e:
+        print(f"   ⚠ 產業別資料抓取失敗：{e}", flush=True)
+
+    stocks = [
+        {"code": code, "name": name,
+         "industry": industry_map.get(code, "—")}
+        for code, name in day_data.items()
+    ]
+    print(f"   共 {len(stocks)} 檔上市股票", flush=True)
+    return stocks
 
 # ── 2. 計算布林通道 ───────────────────────────────────────────────────────────
 def calc_bollinger(close_series, window=20, std_mult=2):
@@ -81,7 +112,8 @@ def scan_stocks(stocks, batch_size=150):
     for i in range(0, total, batch_size):
         batch = stocks[i : i + batch_size]
         tickers = [f"{s['code']}.TW" for s in batch]
-        name_map = {f"{s['code']}.TW": s["name"] for s in batch}
+        name_map     = {f"{s['code']}.TW": s["name"]     for s in batch}
+        industry_map = {f"{s['code']}.TW": s.get("industry", "—") for s in batch}
 
         pct = (i + len(batch)) / total * 100
         print(f"   下載中 {i+1}~{i+len(batch)}/{total}（{pct:.0f}%）...", flush=True)
@@ -220,6 +252,7 @@ def scan_stocks(stocks, batch_size=150):
                 results.append({
                     "code":             code,
                     "name":             name_map.get(ticker, ""),
+                    "industry":         industry_map.get(ticker, "—"),
                     "close":            round(last_close, 2),
                     "ma20":             round(last_ma20,  2),
                     "current_dev":      round(current_dev * 100, 2),
@@ -568,6 +601,7 @@ def gen_html(results, scan_time, local_dir=""):
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
           <td>{r['name']}</td>
+          <td class="industry">{r.get('industry','—')}</td>
           <td class="num">{r['close']}</td>
           <td class="num">{r['ma20']}</td>
           <td class="num {dev_color}">{dev_str}</td>
@@ -656,6 +690,7 @@ def gen_html(results, scan_time, local_dir=""):
     .peak       {{ color: #fb923c; }}
     .up         {{ color: #3b82f6; }}
     .ratio-high {{ color: #4ade80; font-weight: 700; }}
+    .industry   {{ color: #7dd3fc; font-size: 0.82rem; }}
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {{
@@ -800,20 +835,21 @@ def gen_html(results, scan_time, local_dir=""):
       <tr>
         <th onclick="sortTable(0)">代碼 ↕</th>
         <th onclick="sortTable(1)">名稱 ↕</th>
-        <th onclick="sortTable(2)">收盤 ↕</th>
-        <th onclick="sortTable(3)">MA20 ↕</th>
-        <th onclick="sortTable(4)" title="目前收盤與週MA20的乖離率">乖離 ↕</th>
-        <th onclick="sortTable(5)" title="回看期間內最大正乖離">峰乖離 ↕</th>
-        <th onclick="sortTable(6)" title="距離峰值已過幾週">距峰 ↕</th>
-        <th onclick="sortTable(7)" title="MA20與4週前相比的斜率">斜率 ↕</th>
-        <th onclick="sortTable(8)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人 ↕</th>
-        <th onclick="sortTable(9)" title="融資餘額週增減（張）綠=減少 紅=增加">融資 ↕</th>
-        <th onclick="sortTable(10)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張比 ↕</th>
-        <th onclick="sortTable(11)" title="千張大戶比週增減，正值紅=加碼，負值綠=減倉">千張變 ↕</th>
-        <th onclick="sortTable(12)" title="前高至收盤區間的加權成交量（萬張），代表上方套牢壓力">壓力 ↕</th>
-        <th onclick="sortTable(13)" title="收盤至(收盤-D)等寬區間的加權成交量（萬張），代表下方支撐籌碼">支撐 ↕</th>
-        <th onclick="sortTable(14)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓 ↕</th>
-        <th onclick="sortTable(15)" title="本週成交金額÷回看期間峰值成交金額，越低表示縮量修正越健康">量縮比 ↕</th>
+        <th onclick="sortTable(2)">產業 ↕</th>
+        <th onclick="sortTable(3)">收盤 ↕</th>
+        <th onclick="sortTable(4)">MA20 ↕</th>
+        <th onclick="sortTable(5)" title="目前收盤與週MA20的乖離率">乖離 ↕</th>
+        <th onclick="sortTable(6)" title="回看期間內最大正乖離">峰乖離 ↕</th>
+        <th onclick="sortTable(7)" title="距離峰值已過幾週">距峰 ↕</th>
+        <th onclick="sortTable(8)" title="MA20與4週前相比的斜率">斜率 ↕</th>
+        <th onclick="sortTable(9)" title="三大法人本週買賣超合計（萬股）紅=買超 綠=賣超">法人 ↕</th>
+        <th onclick="sortTable(10)" title="融資餘額週增減（張）綠=減少 紅=增加">融資 ↕</th>
+        <th onclick="sortTable(11)" title="集保分散表千張以上持股比例（TDCC Level-15）">千張比 ↕</th>
+        <th onclick="sortTable(12)" title="千張大戶比週增減，正值紅=加碼，負值綠=減倉">千張變 ↕</th>
+        <th onclick="sortTable(13)" title="前高至收盤區間的加權成交量（萬張），代表上方套牢壓力">壓力 ↕</th>
+        <th onclick="sortTable(14)" title="收盤至(收盤-D)等寬區間的加權成交量（萬張），代表下方支撐籌碼">支撐 ↕</th>
+        <th onclick="sortTable(15)" title="支撐量÷壓力量，>1.5深綠=支撐強，>1.0綠=支撐佔優，<0.67紅=壓力明顯">支/壓 ↕</th>
+        <th onclick="sortTable(16)" title="本週成交金額÷回看期間峰值成交金額，越低表示縮量修正越健康">量縮比 ↕</th>
       </tr>
     </thead>
     <tbody>
@@ -1033,6 +1069,7 @@ def save_excel(results, scan_time):
         rows.append({
             "代碼":        r["code"],
             "名稱":        r["name"],
+            "產業":        r.get("industry", "—"),
             "收盤":        r["close"],
             "MA20":        r["ma20"],
             "乖離%":       r["current_dev"],
@@ -1122,7 +1159,7 @@ def save_excel(results, scan_time):
 
         # ── 自動調整欄寬 ───────────────────────────────────────────────────
         col_widths = {
-            "代碼": 7, "名稱": 10, "收盤": 8, "MA20": 8,
+            "代碼": 7, "名稱": 10, "產業": 10, "收盤": 8, "MA20": 8,
             "乖離%": 7, "峰乖離%": 8, "距峰(週)": 8, "斜率%": 7,
             "法人(萬股)": 10, "融資增減(張)": 11,
             "千張比%": 8, "千張週變%": 8,
