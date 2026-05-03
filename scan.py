@@ -830,7 +830,7 @@ def gen_html(results, scan_time, local_dir=""):
     <div class="stat-label">回看週期</div>
     <div class="stat-value" style="color:#7dd3fc">{LOOKBACK_WEEKS} 週</div>
   </div>
-  <a href="https://github.com/yoshiagent/tw-weekly-ma20/raw/master/XQ%E8%87%AA%E9%81%B8%E8%82%A1.csv"
+  <a href="XQ%E8%87%AA%E9%81%B8%E8%82%A1.csv"
      download="XQ自選股.csv"
      class="dl-btn" title="下載 XQ 自選股清單（CSV）">
     ⬇ XQ 自選股
