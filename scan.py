@@ -784,7 +784,7 @@ def gen_html(results, scan_time, local_dir=""):
 <body>
 
 <h1>台股週K MA20 ｜正乖離修正回測清單</h1>
-<p class="subtitle">資料來源：Yahoo Finance 週K線（還原權值）　｜　點擊列查看週K圖表</p>
+<p class="subtitle">資料來源：Yahoo Finance 週K線（還原權值）　｜　點擊股票名稱查看週K線圖</p>
 
 <div class="stats">
   <div class="stat-card" style="border-color: rgba(59,130,246,0.5);">
@@ -812,15 +812,17 @@ def gen_html(results, scan_time, local_dir=""):
 </div>
 
 <div class="callout">
-  <strong>篩選邏輯說明</strong><br>
-  ① <strong>週 MA20 向上（Moving Average 20-week）</strong>：當前 MA20 高於 {MA20_SLOPE_WEEKS} 週前的 MA20，確認均線處於上升趨勢<br>
-  ② <strong>曾有大正乖離（Positive Deviation）</strong>：過去 {LOOKBACK_WEEKS} 週內，收盤價曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}% 以上</strong><br>
-  ③ <strong>修正到 MA20 附近（Pullback to MA）</strong>：目前乖離率介於 <strong>{int(NEAR_MA20_MIN*100)}% 至 +{int(NEAR_MA20_MAX*100)}%</strong><br>
-  📊 點擊任一列可查看 <strong>週K線圖 + 布林通道（Bollinger Bands, {BB_STD}σ）</strong><br>
-  👥 <strong>法人(萬股)</strong>：三大法人（外資＋投信＋自營）本週合計買賣超，正值紅色＝買超，負值綠色＝賣超<br>
-  💳 <strong>融資週增減(張)</strong>：融資餘額與上週比較，正值紅色＝融資增加（散戶積極做多），負值綠色＝融資減少（健康去槓桿）<br>
-  🏦 <strong>千張大戶比</strong>：集保分散表 Level-15（持股千張以上）占全部庫存比例，反映法人/大戶集中度；<strong>週增減</strong>正值紅色＝大戶持續加碼，負值綠色＝大戶減倉（資料來源：TDCC 開放資料）<br>
-  📊 <strong>壓力量／支撐量</strong>：以週K線均勻分布法估算，D＝前高－收盤；壓力量＝[收盤, 前高]區間歷史成交量；支撐量＝[收盤－D, 收盤]等寬區間歷史成交量；<strong>支/壓比值</strong>＞1.5 深綠＝支撐顯著強，＞1.0 綠＝支撐佔優，＜0.67 紅＝壓力明顯
+  <strong>篩選邏輯</strong>
+  ① <strong>週MA20向上</strong>：當前 MA20 高於 {MA20_SLOPE_WEEKS} 週前
+  ② <strong>曾有大正乖離</strong>：過去 {LOOKBACK_WEEKS} 週內曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}%</strong>
+  ③ <strong>已修正回MA20附近</strong>：目前乖離 <strong>{int(NEAR_MA20_MIN*100)}% ～ +{int(NEAR_MA20_MAX*100)}%</strong>
+  ④ <strong>收盤 ≥ 50 元</strong><br>
+  📈 點擊<strong>股票名稱</strong>查看週K線圖 + 布林通道（BB {BB_STD}σ）<br>
+  👥 <strong>法人</strong>：三大法人本週買賣超（萬股），<span style="color:#f87171">紅＝買超</span>／<span style="color:#34d399">綠＝賣超</span><br>
+  💳 <strong>融資</strong>：融資餘額週增減（張），<span style="color:#34d399">綠＝減少（健康）</span>／<span style="color:#f87171">紅＝增加（注意）</span><br>
+  🏦 <strong>千張比／千張變</strong>：集保分散表千張以上持股比例及週增減，<span style="color:#f87171">紅＝大戶加碼</span>／<span style="color:#34d399">綠＝大戶減倉</span><br>
+  📊 <strong>壓力／支撐／支壓比</strong>：D＝前高－收盤；壓力＝[收盤→前高]加權成交量；支撐＝等寬下方區間；比值 <span style="color:#4ade80">≥1.5 強支撐</span>／<span style="color:#34d399">≥1.0 支撐佔優</span>／<span style="color:#f87171">&lt;0.67 壓力重</span><br>
+  📉 <strong>量縮比</strong>：本週成交金額÷峰值成交金額，越低表示縮量修正越健康
 </div>
 
 <div class="params">
