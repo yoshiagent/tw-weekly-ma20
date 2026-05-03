@@ -600,7 +600,7 @@ def gen_html(results, scan_time, local_dir=""):
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
           <td class="code">{r['code']}</td>
-          <td>{r['name']}</td>
+          <td><span class="name-link">{r['name']}</span></td>
           <td class="industry">{r.get('industry','—')}</td>
           <td class="num">{r['close']}</td>
           <td class="num">{r['ma20']}</td>
@@ -675,7 +675,7 @@ def gen_html(results, scan_time, local_dir=""):
     }}
     th:hover {{ color: #3b82f6; }}
     tbody tr {{
-      border-top: 1px solid #1a2d42; transition: background 0.15s; cursor: pointer;
+      border-top: 1px solid #1a2d42; transition: background 0.15s;
     }}
     tbody tr:hover {{ background: #162030; }}
     tbody tr.active {{ background: #0f2040; outline: 1px solid #3b82f6; }}
@@ -691,6 +691,12 @@ def gen_html(results, scan_time, local_dir=""):
     .up         {{ color: #3b82f6; }}
     .ratio-high {{ color: #4ade80; font-weight: 700; }}
     .industry   {{ color: #7dd3fc; font-size: 0.82rem; }}
+    .name-link  {{
+      cursor: pointer; color: #e2e8f0;
+      border-bottom: 1px dashed rgba(99,179,237,0.4);
+      transition: color 0.15s, border-color 0.15s;
+    }}
+    .name-link:hover {{ color: #60a5fa; border-bottom-color: #60a5fa; }}
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {{
@@ -1028,9 +1034,11 @@ function closeModalOnBg(e) {{
   if (e.target === document.getElementById("modalOverlay")) closeModal();
 }}
 
-// 點擊列開圖
+// 點擊股名開圖
 document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
-  row.addEventListener("click", () => {{
+  const nameSpan = row.querySelector(".name-link");
+  if (!nameSpan) return;
+  nameSpan.addEventListener("click", () => {{
     document.querySelectorAll("#mainTable tbody tr").forEach(r => r.classList.remove("active"));
     row.classList.add("active");
     openChart(row.dataset.code, row.dataset.name);
