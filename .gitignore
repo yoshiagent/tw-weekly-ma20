@@ -1,3 +1,4 @@
 *.xlsx
+XQ自選股_*.csv
 __pycache__/
 *.pyc

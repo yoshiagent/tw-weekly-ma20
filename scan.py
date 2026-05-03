@@ -1223,6 +1223,24 @@ def save_excel(results, scan_time):
     print(f"   Excel 已存：{xl_path}", flush=True)
     return xl_path
 
+# ── 11. 匯出 XQ 自選股 CSV ────────────────────────────────────────────────────
+def save_xq_watchlist(results):
+    """
+    產生可匯入 XQ全球贏家 的自選股 CSV 檔。
+    格式：每行 代碼.TW（如 2330.TW），編碼 BIG5（CP950），無標題列。
+    """
+    date_str = datetime.now().strftime("%Y%m%d")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(base_dir, f"XQ自選股_{date_str}.csv")
+
+    try:
+        with open(csv_path, "w", encoding="cp950", newline="") as f:
+            for r in results:
+                f.write(f"{r['code']}.TW\n")
+        print(f"   XQ 自選股已存：{csv_path}", flush=True)
+    except Exception as e:
+        print(f"   ⚠ XQ 自選股輸出失敗：{e}", flush=True)
+
 # ── 主程式 ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 60, flush=True)
@@ -1272,5 +1290,9 @@ if __name__ == "__main__":
     # ⑧ 匯出 Excel（本機留存）
     print("匯出 Excel...", flush=True)
     save_excel(results, scan_time)
+
+    # ⑨ 匯出 XQ 自選股 CSV
+    print("匯出 XQ 自選股 CSV...", flush=True)
+    save_xq_watchlist(results)
 
     print(f"完成！共 {len(results)} 檔。", flush=True)
