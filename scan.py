@@ -1248,7 +1248,7 @@ def save_xq_watchlist(results):
     csv_path = os.path.join(base_dir, "XQ自選股.csv")   # 固定檔名，每週覆蓋
 
     try:
-        with open(csv_path, "w", encoding="cp950", newline="") as f:
+        with open(csv_path, "w", encoding="cp950", newline="\r\n") as f:
             for r in results:
                 f.write(f"{r['code']}.TW\n")
         print(f"   XQ 自選股已存：{csv_path}", flush=True)
