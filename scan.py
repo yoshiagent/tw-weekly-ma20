@@ -18,7 +18,7 @@ import sys
 import os
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # ── 參數設定 ──────────────────────────────────────────────────────────────────
 LOOKBACK_WEEKS    = 16    # 往回看幾週判斷「曾有大正乖離」
@@ -1292,7 +1292,8 @@ if __name__ == "__main__":
         r["tdcc"]          = tdcc_data.get(code)
 
     # ⑦ 產生 HTML
-    scan_time = datetime.now().strftime("%Y-%m-%d %H:%M")
+    TW_TZ = timezone(timedelta(hours=8))
+    scan_time = datetime.now(TW_TZ).strftime("%Y-%m-%d %H:%M")
     html = gen_html(results, scan_time,
                     local_dir=os.path.dirname(os.path.abspath(__file__)))
 
