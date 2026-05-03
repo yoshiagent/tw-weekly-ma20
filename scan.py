@@ -1229,9 +1229,8 @@ def save_xq_watchlist(results):
     產生可匯入 XQ全球贏家 的自選股 CSV 檔。
     格式：每行 代碼.TW（如 2330.TW），編碼 BIG5（CP950），無標題列。
     """
-    date_str = datetime.now().strftime("%Y%m%d")
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(base_dir, f"XQ自選股_{date_str}.csv")
+    csv_path = os.path.join(base_dir, "XQ自選股.csv")   # 固定檔名，每週覆蓋
 
     try:
         with open(csv_path, "w", encoding="cp950", newline="") as f:
