@@ -927,7 +927,6 @@ function openChart(code, name) {{
     lineStyle: 2,       // dashed
     priceLineVisible: false,
     lastValueVisible: false,
-    title: "BB上軌",
   }});
   bbUpperSeries.setData(data.bb_upper);
 
@@ -937,7 +936,6 @@ function openChart(code, name) {{
     lineStyle: 2,
     priceLineVisible: false,
     lastValueVisible: false,
-    title: "BB下軌",
   }});
   bbLowerSeries.setData(data.bb_lower);
 
@@ -945,8 +943,7 @@ function openChart(code, name) {{
     color: "#3b82f6",
     lineWidth: 2,
     priceLineVisible: false,
-    lastValueVisible: true,
-    title: "MA20",
+    lastValueVisible: false,
   }});
   ma20Series.setData(data.ma20);
 
