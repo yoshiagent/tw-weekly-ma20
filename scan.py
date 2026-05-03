@@ -1049,6 +1049,21 @@ function openChart(code, name) {{
     if (param.time) mainChart.setCrosshairPosition(0, param.time, candleSeries);
     else mainChart.clearCrosshairPosition();
   }});
+
+  // 同步時間軸（滾動 / 縮放）
+  let _syncingMain = false, _syncingVol = false;
+  mainChart.timeScale().subscribeVisibleLogicalRangeChange(range => {{
+    if (_syncingVol || range === null) return;
+    _syncingMain = true;
+    volChart.timeScale().setVisibleLogicalRange(range);
+    _syncingMain = false;
+  }});
+  volChart.timeScale().subscribeVisibleLogicalRangeChange(range => {{
+    if (_syncingMain || range === null) return;
+    _syncingVol = true;
+    mainChart.timeScale().setVisibleLogicalRange(range);
+    _syncingVol = false;
+  }});
 }}
 
 function closeModal() {{
