@@ -459,7 +459,7 @@ def get_tdcc_weekly_change():
     return result
 
 # ── 9. 產生 HTML ──────────────────────────────────────────────────────────────
-def gen_html(results, scan_time):
+def gen_html(results, scan_time, local_dir=""):
     results.sort(key=lambda x: x.get("vol_shrink_ratio") or 999)
 
     # 把圖表資料分離，只把 code→chart 的映射嵌入 JS
@@ -847,7 +847,11 @@ def gen_html(results, scan_time):
 
 <footer>
   資料來源：<strong>Yahoo Finance</strong> 週K線（auto_adjust 還原權值）、台灣證券交易所（TWSE）上市股票清單<br>
-  圖表：<strong>TradingView Lightweight Charts</strong>｜注意：資料僅供參考，不構成任何投資建議。
+  圖表：<strong>TradingView Lightweight Charts</strong>｜注意：資料僅供參考，不構成任何投資建議。<br>
+  <span style="color:#4a6080; font-size:0.75rem;">
+    📁 本機資料夾：<code style="color:#60a5fa; background:#0f2040; padding:2px 6px; border-radius:3px;">{local_dir}</code>
+    　｜　Excel 檔名：<code style="color:#60a5fa; background:#0f2040; padding:2px 6px; border-radius:3px;">台股MA20掃描_YYYYMMDD.xlsx</code>
+  </span>
 </footer>
 
 <script>
@@ -1168,7 +1172,8 @@ if __name__ == "__main__":
 
     # ⑦ 產生 HTML
     scan_time = datetime.now().strftime("%Y-%m-%d %H:%M")
-    html = gen_html(results, scan_time)
+    html = gen_html(results, scan_time,
+                    local_dir=os.path.dirname(os.path.abspath(__file__)))
 
     out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
