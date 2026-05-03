@@ -599,9 +599,9 @@ def gen_html(results, scan_time, local_dir=""):
 
         rows += f"""
         <tr data-code="{r['code']}" data-name="{r['name']}">
-          <td class="code">{r['code']}</td>
+          <td class="code"><span class="code-link">{r['code']}</span></td>
           <td><span class="name-link">{r['name']}</span></td>
-          <td class="industry">{r.get('industry','—')}</td>
+          <td class="industry"><span class="ind-link">{r.get('industry','—')}</span></td>
           <td class="num">{r['close']}</td>
           <td class="num">{r['ma20']}</td>
           <td class="num {dev_color}">{dev_str}</td>
@@ -696,7 +696,18 @@ def gen_html(results, scan_time, local_dir=""):
       border-bottom: 1px dashed rgba(99,179,237,0.4);
       transition: color 0.15s, border-color 0.15s;
     }}
-    .name-link:hover {{ color: #60a5fa; border-bottom-color: #60a5fa; }}
+    .name-link:hover  {{ color: #60a5fa; border-bottom-color: #60a5fa; }}
+    .code-link  {{
+      cursor: pointer;
+      transition: color 0.15s;
+    }}
+    .code-link:hover  {{ color: #fbbf24; text-decoration: underline; }}
+    .ind-link   {{
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+      border-radius: 3px; padding: 1px 4px;
+    }}
+    .ind-link:hover   {{ background: rgba(125,211,252,0.15); color: #38bdf8; }}
 
     /* ── 圖表 Modal ────────────────────────────────────── */
     .modal-overlay {{
@@ -817,7 +828,7 @@ def gen_html(results, scan_time, local_dir=""):
   ② <strong>曾有大正乖離</strong>：過去 {LOOKBACK_WEEKS} 週內曾超越 MA20 達 <strong>+{int(BIG_DEV_THRESHOLD*100)}%</strong>
   ③ <strong>已修正回MA20附近</strong>：目前乖離 <strong>{int(NEAR_MA20_MIN*100)}% ～ +{int(NEAR_MA20_MAX*100)}%</strong>
   ④ <strong>收盤 ≥ 50 元</strong><br>
-  📈 點擊<strong>股票名稱</strong>查看週K線圖 + 布林通道（BB {BB_STD}σ）<br>
+  📈 點擊<strong>代碼</strong>或<strong>股票名稱</strong>查看週K線圖 + 布林通道（BB {BB_STD}σ）；點擊<strong>產業</strong>篩選同產業（再點一次清除）<br>
   👥 <strong>法人</strong>：三大法人本週買賣超（萬股），<span style="color:#f87171">紅＝買超</span>／<span style="color:#34d399">綠＝賣超</span><br>
   💳 <strong>融資</strong>：融資餘額週增減（張），<span style="color:#34d399">綠＝減少（健康）</span>／<span style="color:#f87171">紅＝增加（注意）</span><br>
   🏦 <strong>千張比／千張變</strong>：集保分散表千張以上持股比例及週增減，<span style="color:#f87171">紅＝大戶加碼</span>／<span style="color:#34d399">綠＝大戶減倉</span><br>
@@ -1036,14 +1047,45 @@ function closeModalOnBg(e) {{
   if (e.target === document.getElementById("modalOverlay")) closeModal();
 }}
 
-// 點擊股名開圖
+// 點擊股名或代碼 → 開圖
 document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
-  const nameSpan = row.querySelector(".name-link");
-  if (!nameSpan) return;
-  nameSpan.addEventListener("click", () => {{
-    document.querySelectorAll("#mainTable tbody tr").forEach(r => r.classList.remove("active"));
-    row.classList.add("active");
-    openChart(row.dataset.code, row.dataset.name);
+  [".name-link", ".code-link"].forEach(sel => {{
+    const el = row.querySelector(sel);
+    if (!el) return;
+    el.addEventListener("click", () => {{
+      document.querySelectorAll("#mainTable tbody tr").forEach(r => r.classList.remove("active"));
+      row.classList.add("active");
+      openChart(row.dataset.code, row.dataset.name);
+    }});
+  }});
+}});
+
+// 點擊產業 → 篩選同產業（再點一次清除篩選）
+let activeIndustry = "";
+document.querySelectorAll("#mainTable tbody tr").forEach(row => {{
+  const el = row.querySelector(".ind-link");
+  if (!el) return;
+  el.addEventListener("click", () => {{
+    const ind = el.textContent.trim();
+    if (activeIndustry === ind) {{
+      // 同一產業再點 → 清除篩選
+      activeIndustry = "";
+      document.getElementById("search").value = "";
+      document.querySelectorAll("#mainTable tbody tr").forEach(r => {{
+        r.style.display = "";
+        r.querySelector(".ind-link") && (r.querySelector(".ind-link").style.fontWeight = "");
+      }});
+    }} else {{
+      activeIndustry = ind;
+      document.getElementById("search").value = "";
+      document.querySelectorAll("#mainTable tbody tr").forEach(r => {{
+        const rInd = r.querySelector(".ind-link");
+        if (!rInd) return;
+        const match = rInd.textContent.trim() === ind;
+        r.style.display = match ? "" : "none";
+        rInd.style.fontWeight = match ? "700" : "";
+      }});
+    }}
   }});
 }});
 
