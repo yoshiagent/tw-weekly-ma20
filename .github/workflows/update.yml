@@ -34,4 +34,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html margin_cache.json tdcc_cache.json
           git diff --cached --quiet || git commit -m "auto: 更新台股 MA20 掃描結果 $(date -u +'%Y-%m-%d')"
+          # 若遠端有新 commit（如本機手動推送），rebase 並以本次掃描版本為準
+          git pull --rebase -X ours origin master
           git push
