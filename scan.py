@@ -645,6 +645,16 @@ def gen_html(results, scan_time, local_dir=""):
     .stat-label {{ font-size: 0.78rem; color: #94a3b8; margin-bottom: 4px; }}
     .stat-value {{ font-size: 1.5rem; font-weight: 700; color: #3b82f6; }}
 
+    .dl-btn {{
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f2040; border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 8px; color: #60a5fa; font-size: 0.85rem;
+      padding: 10px 18px; text-decoration: none; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap; align-self: center;
+    }}
+    .dl-btn:hover {{ background: #162540; border-color: #3b82f6; color: #93c5fd; }}
+
     .callout {{
       background: #0f2040; border: 1px solid rgba(59,130,246,0.3);
       border-radius: 8px; color: #93c5fd; font-size: 0.85rem;
@@ -820,6 +830,11 @@ def gen_html(results, scan_time, local_dir=""):
     <div class="stat-label">回看週期</div>
     <div class="stat-value" style="color:#7dd3fc">{LOOKBACK_WEEKS} 週</div>
   </div>
+  <a href="https://github.com/yoshiagent/tw-weekly-ma20/raw/master/XQ%E8%87%AA%E9%81%B8%E8%82%A1.csv"
+     download="XQ自選股.csv"
+     class="dl-btn" title="下載 XQ 自選股清單（CSV）">
+    ⬇ XQ 自選股
+  </a>
 </div>
 
 <div class="callout">
